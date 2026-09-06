@@ -1,0 +1,23 @@
+info:
+  name: Create User
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/auth/register
+  body:
+    type: json
+    data: |-
+      {
+        "email": "kusalsalpura@gmail.com",
+        "password": "kusal123",
+        "name": "Kusal"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

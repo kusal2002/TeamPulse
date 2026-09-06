@@ -1,0 +1,24 @@
+info:
+  name: User Login
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:3000/auth/login
+  body:
+    type: json
+    data: |-
+      {
+        "email": "kusalsalpura@gmail.com",
+        "password": "kusal123"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNDFhNDgxOS05MGY0LTQ3NDctYmVkOS1mYjZjNzQwMjRhNjQiLCJlbWFpbCI6Imt1c2Fsc2FscHVyYUBnbWFpbC5jb20iLCJyb2xlIjoiVEVBTV9NRU1CRVIiLCJpYXQiOjE3ODg2Nzk3MDIsImV4cCI6MTc4OTI4NDUwMn0.IrqfSSTg2Gk0QH2raqMCqNQ7JFD-FmsCdRy6jcRZSYM
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

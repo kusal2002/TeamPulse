@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- ENUMS ---
+enum Role {
+  TEAM_MEMBER
+  MANAGER
+}
+
+enum ReportStatus {
+  DRAFT
+  SUBMITTED
+  NEEDS_CORRECTION
+  APPROVED
+}
+
+enum ReviewAction {
+  APPROVED
+  REQUESTED_CHANGES
+}
+
+// --- CORE ENTITIES ---
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(TEAM_MEMBER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  reports      Report[]
+  managedProjects Project[] @relation("ManagerProjects")
+  assignedProjects  Project[] @relation("UserProjects")
+  reviewComments ReviewComment[]
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  reports     Report[]
+  managers    User[]   @relation("ManagerProjects")
+  members     User[]   @relation("UserProjects")
+}
+
+// --- REPORTING ENTITIES ---
+
+model Report {
+  id          String       @id @default(uuid())
+  userId      String
+  projectId   String
+  weekStart   DateTime     // The Monday of the report week
+  
+  // The current status of the report (updates as it goes through the workflow)
+  status      ReportStatus @default(DRAFT) 
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  user        User         @relation(fields: [userId], references: [id])
+  project     Project      @relation(fields: [projectId], references: [id])
+  versions    ReportVersion[]
+  comments    ReviewComment[]
+
+  // Ensure a user can only have one report per week
+  @@unique([userId, weekStart]) 
+}
+
+// Stores the actual content of the report. 
+// A new version is created every time the user edits and resubmits.
+model ReportVersion {
+  id               String   @id @default(uuid())
+  reportId         String
+  versionNumber    Int      // 1, 2, 3...
+  submittedAt      DateTime @default(now())
+  
+  // Fixed Structure Fields
+  tasksPlannedNext String   // Text area for next week's tasks
+  optionalNotes    String?  // Optional notes or links
+
+  // Relations
+  report           Report   @relation(fields: [reportId], references: [id])
+  tasksCompleted   TaskCompleted[]
+  blockers         Blocker[]
+  achievements     Achievement[]
+  hoursWorked      HoursWorked[]
+  reviewComments   ReviewComment[] // Links comments to this specific version
+}
+
+// Task-level table for completed tasks
+model TaskCompleted {
+  id             String  @id @default(uuid())
+  reportVersionId String
+  taskName       String
+  priority       String  // e.g., High, Medium, Low
+  plannedPercent Int     // 0-100
+  actualPercent  Int     // 0-100
+  status         String  // e.g., Done, In Progress
+  timePlanned    Float   // Hours
+  timeSpent      Float   // Hours
+  deliverable    String? // Output produced
+
+  reportVersion  ReportVersion @relation(fields: [reportVersionId], references: [id], onDelete: Cascade)
+}
+
+model Blocker {
+  id             String  @id @default(uuid())
+  reportVersionId String
+  description    String
+  isKeyIssue     Boolean @default(false) // To flag the key issue of the week
+
+  reportVersion  ReportVersion @relation(fields: [reportVersionId], references: [id], onDelete: Cascade)
+}
+
+model Achievement {
+  id             String  @id @default(uuid())
+  reportVersionId String
+  description    String
+  isKeyHighlight Boolean @default(false) // To flag the key achievement of the week
+
+  reportVersion  ReportVersion @relation(fields: [reportVersionId], references: [id], onDelete: Cascade)
+}
+
+model HoursWorked {
+  id             String  @id @default(uuid())
+  reportVersionId String
+  taskType       String  // e.g., Development, Testing, Meetings
+  hours          Float
+
+  reportVersion  ReportVersion @relation(fields: [reportVersionId], references: [id], onDelete: Cascade)
+}
+
+// --- REVIEW & WORKFLOW ENTITIES ---
+
+model ReviewComment {
+  id              String       @id @default(uuid())
+  reportId        String
+  reportVersionId String       // Which version was this comment made against?
+  managerId       String
+  comment         String       // The general comment describing what needs to change
+  action          ReviewAction // APPROVED or REQUESTED_CHANGES
+  createdAt       DateTime     @default(now())
+
+  // Relations
+  report          Report       @relation(fields: [reportId], references: [id])
+  reportVersion   ReportVersion @relation(fields: [reportVersionId], references: [id])
+  manager         User         @relation(fields: [managerId], references: [id])
+}
