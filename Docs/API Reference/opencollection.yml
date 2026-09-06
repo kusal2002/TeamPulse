@@ -1,0 +1,29 @@
+opencollection: 1.0.0
+
+info:
+  name: API Reference
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  headers:
+    - name: ""
+      value: ""
+  variables:
+    - name: REPORT_ID
+      value: 903a2459-8ee5-40bc-8df2-fa5abfffc9a2
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git

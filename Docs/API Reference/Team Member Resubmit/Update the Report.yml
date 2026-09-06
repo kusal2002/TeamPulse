@@ -1,0 +1,280 @@
+info:
+  name: "Update the Report "
+  type: http
+  seq: 1
+
+http:
+  method: PUT
+  url: http://localhost:3000/reports/{{REPORT_ID}}
+  body:
+    type: json
+    data: |-
+      {
+        "weekStart": "2026-09-01T00:00:00.000Z",
+        "projectId": "PROJECT_ID",
+        "tasksPlannedNext": "Finish the dashboard UI and write unit tests.",
+        "optionalNotes": "Taking Friday off.",
+        "tasksCompleted": [
+          {
+            "taskName": "Setup React Routing",
+            "priority": "High",
+            "plannedPercent": 100,
+            "actualPercent": 100,
+            "status": "Done",
+            "timePlanned": 4,
+            "timeSpent": 3.5,
+            "deliverable": "Working routing structure with protected routes and lazy loading implemented."
+          }
+        ],
+        "blockers": [
+          {
+            "description": "Waiting on API endpoints from backend team. Followed up with John, expecting them by Tuesday.",
+            "isKeyIssue": true
+          }
+        ],
+        "achievements": [
+          {
+            "description": "Reduced bundle size by 20%",
+            "isKeyHighlight": true
+          }
+        ],
+        "hoursWorked": [
+          { "taskType": "Development", "hours": 20 },
+          { "taskType": "Meetings", "hours": 5 }
+        ]
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNDFhNDgxOS05MGY0LTQ3NDctYmVkOS1mYjZjNzQwMjRhNjQiLCJlbWFpbCI6Imt1c2Fsc2FscHVyYUBnbWFpbC5jb20iLCJyb2xlIjoiVEVBTV9NRU1CRVIiLCJpYXQiOjE3ODg2OTAxMTksImV4cCI6MTc4OTI5NDkxOX0.qtOEAyh-JWYMzxf1UaWXFddPMk6twTb0exlHGr-ed9k
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example Update the Report
+    request:
+      url: http://localhost:3000/reports/{{REPORT_ID}}
+      method: PUT
+      body:
+        type: json
+        data: |-
+          {
+            "weekStart": "2026-09-01T00:00:00.000Z",
+            "projectId": "PROJECT_ID",
+            "tasksPlannedNext": "Finish the dashboard UI and write unit tests.",
+            "optionalNotes": "Taking Friday off.",
+            "tasksCompleted": [
+              {
+                "taskName": "Setup React Routing",
+                "priority": "High",
+                "plannedPercent": 100,
+                "actualPercent": 100,
+                "status": "Done",
+                "timePlanned": 4,
+                "timeSpent": 3.5,
+                "deliverable": "Working routing structure with protected routes and lazy loading implemented."
+              }
+            ],
+            "blockers": [
+              {
+                "description": "Waiting on API endpoints from backend team. Followed up with John, expecting them by Tuesday.",
+                "isKeyIssue": true
+              }
+            ],
+            "achievements": [
+              {
+                "description": "Reduced bundle size by 20%",
+                "isKeyHighlight": true
+              }
+            ],
+            "hoursWorked": [
+              { "taskType": "Development", "hours": 20 },
+              { "taskType": "Meetings", "hours": 5 }
+            ]
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: x-powered-by
+          value: Express
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "4441"
+        - name: etag
+          value: W/"1159-DqSjRAj8nQyHrCTEDn25ndeSW8o"
+        - name: date
+          value: Sun, 06 Sep 2026 10:47:39 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "id": "903a2459-8ee5-40bc-8df2-fa5abfffc9a2",
+            "userId": "e41a4819-90f4-4747-bed9-fb6c74024a64",
+            "projectId": "a3d3c9ab-e7fe-47cd-874c-bf9ad5f027a7",
+            "weekStart": "2026-09-01T00:00:00.000Z",
+            "status": "NEEDS_CORRECTION",
+            "createdAt": "2026-09-06T10:36:45.443Z",
+            "updatedAt": "2026-09-06T10:43:59.402Z",
+            "user": {
+              "id": "e41a4819-90f4-4747-bed9-fb6c74024a64",
+              "email": "kusalsalpura@gmail.com",
+              "passwordHash": "$2b$10$liqOGwMn1.RLTvYey4Q1W.ZJH8em6x3cd5eByx6a0xW/OxeV/95kG",
+              "name": "Kusal",
+              "role": "TEAM_MEMBER",
+              "createdAt": "2026-09-06T07:28:22.639Z",
+              "updatedAt": "2026-09-06T07:28:22.639Z"
+            },
+            "project": {
+              "id": "a3d3c9ab-e7fe-47cd-874c-bf9ad5f027a7",
+              "name": "Client A Portal",
+              "description": "Frontend development for Client A",
+              "createdAt": "2026-09-06T10:18:50.462Z"
+            },
+            "versions": [
+              {
+                "id": "eee2cf37-a949-4112-9dae-fd142e21cfbb",
+                "reportId": "903a2459-8ee5-40bc-8df2-fa5abfffc9a2",
+                "versionNumber": 2,
+                "submittedAt": "2026-09-06T10:47:39.319Z",
+                "tasksPlannedNext": "Finish the dashboard UI and write unit tests.",
+                "optionalNotes": "Taking Friday off.",
+                "tasksCompleted": [
+                  {
+                    "id": "ba6817ec-4b81-4a3a-a966-8e8f22c6b395",
+                    "reportVersionId": "eee2cf37-a949-4112-9dae-fd142e21cfbb",
+                    "taskName": "Setup React Routing",
+                    "priority": "High",
+                    "plannedPercent": 100,
+                    "actualPercent": 100,
+                    "status": "Done",
+                    "timePlanned": 4,
+                    "timeSpent": 3.5,
+                    "deliverable": "Working routing structure with protected routes and lazy loading implemented."
+                  }
+                ],
+                "blockers": [
+                  {
+                    "id": "b31e594f-f84e-45bc-9e81-3073e8e614c4",
+                    "reportVersionId": "eee2cf37-a949-4112-9dae-fd142e21cfbb",
+                    "description": "Waiting on API endpoints from backend team. Followed up with John, expecting them by Tuesday.",
+                    "isKeyIssue": true
+                  }
+                ],
+                "achievements": [
+                  {
+                    "id": "c4996238-9b77-4b59-8b9d-7cf08abee4f5",
+                    "reportVersionId": "eee2cf37-a949-4112-9dae-fd142e21cfbb",
+                    "description": "Reduced bundle size by 20%",
+                    "isKeyHighlight": true
+                  }
+                ],
+                "hoursWorked": [
+                  {
+                    "id": "abc22904-800a-4b63-bc15-e23954d099b6",
+                    "reportVersionId": "eee2cf37-a949-4112-9dae-fd142e21cfbb",
+                    "taskType": "Development",
+                    "hours": 20
+                  },
+                  {
+                    "id": "69873875-a0ac-429a-9ebf-fb1d1d2c383d",
+                    "reportVersionId": "eee2cf37-a949-4112-9dae-fd142e21cfbb",
+                    "taskType": "Meetings",
+                    "hours": 5
+                  }
+                ],
+                "reviewComments": []
+              },
+              {
+                "id": "fab67046-2550-40b8-976d-f7f9181c6d7d",
+                "reportId": "903a2459-8ee5-40bc-8df2-fa5abfffc9a2",
+                "versionNumber": 1,
+                "submittedAt": "2026-09-06T10:36:45.443Z",
+                "tasksPlannedNext": "Finish the dashboard UI and write unit tests.",
+                "optionalNotes": "Taking Friday off.",
+                "tasksCompleted": [
+                  {
+                    "id": "e00fc12e-6cd4-43e9-95c3-683b65497341",
+                    "reportVersionId": "fab67046-2550-40b8-976d-f7f9181c6d7d",
+                    "taskName": "Setup React Routing",
+                    "priority": "High",
+                    "plannedPercent": 100,
+                    "actualPercent": 100,
+                    "status": "Done",
+                    "timePlanned": 4,
+                    "timeSpent": 3.5,
+                    "deliverable": "Working routing structure"
+                  }
+                ],
+                "blockers": [
+                  {
+                    "id": "bd105a3b-a4ae-4511-8fe1-8884ed38285a",
+                    "reportVersionId": "fab67046-2550-40b8-976d-f7f9181c6d7d",
+                    "description": "Waiting on API endpoints from backend team",
+                    "isKeyIssue": true
+                  }
+                ],
+                "achievements": [
+                  {
+                    "id": "a1dd5e05-3ed6-4761-bc6b-4ec4628d3253",
+                    "reportVersionId": "fab67046-2550-40b8-976d-f7f9181c6d7d",
+                    "description": "Reduced bundle size by 20%",
+                    "isKeyHighlight": true
+                  }
+                ],
+                "hoursWorked": [
+                  {
+                    "id": "49a391ae-9d39-464f-bdf6-b68e12683eec",
+                    "reportVersionId": "fab67046-2550-40b8-976d-f7f9181c6d7d",
+                    "taskType": "Development",
+                    "hours": 20
+                  },
+                  {
+                    "id": "236b42aa-a0d6-4e42-9d19-9129c95b2bfb",
+                    "reportVersionId": "fab67046-2550-40b8-976d-f7f9181c6d7d",
+                    "taskType": "Meetings",
+                    "hours": 5
+                  }
+                ],
+                "reviewComments": [
+                  {
+                    "id": "2e428da8-14a2-41e6-aa70-4e5d90a977af",
+                    "reportId": "903a2459-8ee5-40bc-8df2-fa5abfffc9a2",
+                    "reportVersionId": "fab67046-2550-40b8-976d-f7f9181c6d7d",
+                    "managerId": "a05040fa-46d9-43ce-aec6-2b18535ec3a7",
+                    "comment": "Please add more details to the 'Setup React Routing' task deliverable. Also, clarify the blocker regarding the API.",
+                    "action": "REQUESTED_CHANGES",
+                    "createdAt": "2026-09-06T10:43:59.405Z"
+                  }
+                ]
+              }
+            ],
+            "comments": [
+              {
+                "id": "2e428da8-14a2-41e6-aa70-4e5d90a977af",
+                "reportId": "903a2459-8ee5-40bc-8df2-fa5abfffc9a2",
+                "reportVersionId": "fab67046-2550-40b8-976d-f7f9181c6d7d",
+                "managerId": "a05040fa-46d9-43ce-aec6-2b18535ec3a7",
+                "comment": "Please add more details to the 'Setup React Routing' task deliverable. Also, clarify the blocker regarding the API.",
+                "action": "REQUESTED_CHANGES",
+                "createdAt": "2026-09-06T10:43:59.405Z",
+                "manager": {
+                  "id": "a05040fa-46d9-43ce-aec6-2b18535ec3a7",
+                  "email": "manager@gmail.com",
+                  "passwordHash": "$2b$10$JBInfyFqNb04QxiHXVa6z.CMky6ktizn2otvpSmzpgWm7uKgeYgwe",
+                  "name": "Manager",
+                  "role": "MANAGER",
+                  "createdAt": "2026-09-06T07:35:53.964Z",
+                  "updatedAt": "2026-09-06T07:35:53.964Z"
+                }
+              }
+            ]
+          }

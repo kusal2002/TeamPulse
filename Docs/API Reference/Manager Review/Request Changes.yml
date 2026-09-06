@@ -1,0 +1,78 @@
+info:
+  name: Request Changes
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:3000/reports/903a2459-8ee5-40bc-8df2-fa5abfffc9a2/review
+  body:
+    type: json
+    data: |-
+      {
+        "action": "REQUESTED_CHANGES",
+        "comment": "Please add more details to the 'Setup React Routing' task deliverable. Also, clarify the blocker regarding the API."
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhMDUwNDBmYS00NmQ5LTQzY2UtYWVjNi0yYjE4NTM1ZWMzYTciLCJlbWFpbCI6Im1hbmFnZXJAZ21haWwuY29tIiwicm9sZSI6Ik1BTkFHRVIiLCJpYXQiOjE3ODg2ODk4NzksImV4cCI6MTc4OTI5NDY3OX0.IJTffjrkDO_TZ5SQp3JOij5ydiYbRzuUaPEkNFYYCiA
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example Request Changes
+    request:
+      url: http://localhost:3000/reports/903a2459-8ee5-40bc-8df2-fa5abfffc9a2/review
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "action": "REQUESTED_CHANGES",
+            "comment": "Please add more details to the 'Setup React Routing' task deliverable. Also, clarify the blocker regarding the API."
+          }
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: x-powered-by
+          value: Express
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "691"
+        - name: etag
+          value: W/"2b3-+4FIFKmpJe9Nu1LyY4pk0mVqOsI"
+        - name: date
+          value: Sun, 06 Sep 2026 10:43:59 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "id": "903a2459-8ee5-40bc-8df2-fa5abfffc9a2",
+              "userId": "e41a4819-90f4-4747-bed9-fb6c74024a64",
+              "projectId": "a3d3c9ab-e7fe-47cd-874c-bf9ad5f027a7",
+              "weekStart": "2026-09-01T00:00:00.000Z",
+              "status": "NEEDS_CORRECTION",
+              "createdAt": "2026-09-06T10:36:45.443Z",
+              "updatedAt": "2026-09-06T10:43:59.402Z"
+            },
+            {
+              "id": "2e428da8-14a2-41e6-aa70-4e5d90a977af",
+              "reportId": "903a2459-8ee5-40bc-8df2-fa5abfffc9a2",
+              "reportVersionId": "fab67046-2550-40b8-976d-f7f9181c6d7d",
+              "managerId": "a05040fa-46d9-43ce-aec6-2b18535ec3a7",
+              "comment": "Please add more details to the 'Setup React Routing' task deliverable. Also, clarify the blocker regarding the API.",
+              "action": "REQUESTED_CHANGES",
+              "createdAt": "2026-09-06T10:43:59.405Z"
+            }
+          ]
