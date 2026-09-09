@@ -29,6 +29,11 @@ export class ReportsController {
     return this.reportsService.submitReport(id, user.id);
   }
 
+  @Get('notifications')
+  getNotifications(@CurrentUser() user: any) {
+    return this.reportsService.getNotifications(user.id, user.role);
+  }
+
   @Get('my-history')
   getMyHistory(@CurrentUser() user: any) {
     return this.reportsService.getMyHistory(user.id);

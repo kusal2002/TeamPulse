@@ -307,4 +307,150 @@ export class ReportsService {
       }),
     ]);
   }
+
+  async getNotifications(userId: string, userRole: string) {
+    const notifications: Array<{
+      id: string;
+      title: string;
+      message: string;
+      time: string;
+      type: 'warning' | 'success' | 'info';
+      link: string;
+      createdAt: string;
+    }> = [];
+
+    if (userRole === 'TEAM_MEMBER') {
+      const reports = await this.prisma.report.findMany({
+        where: { userId },
+        include: {
+          comments: {
+            orderBy: { createdAt: 'desc' },
+            take: 1,
+            include: { manager: { select: { name: true } } },
+          },
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: 10,
+      });
+
+      for (const r of reports) {
+        const dateFormatted = new Date(r.weekStart).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        });
+
+        if (r.status === 'NEEDS_CORRECTION') {
+          const commentText = r.comments[0]?.comment;
+          notifications.push({
+            id: `nc-${r.id}`,
+            title: 'Action Required',
+            message: commentText
+              ? `Manager requested changes: "${commentText}" (Week of ${dateFormatted})`
+              : `Manager requested changes on your report for Week of ${dateFormatted}.`,
+            time: r.updatedAt.toISOString(),
+            type: 'warning',
+            link: '/member/history',
+            createdAt: r.updatedAt.toISOString(),
+          });
+        } else if (r.status === 'APPROVED') {
+          notifications.push({
+            id: `app-${r.id}`,
+            title: 'Report Approved',
+            message: `Your report for Week of ${dateFormatted} has been approved.`,
+            time: r.updatedAt.toISOString(),
+            type: 'success',
+            link: '/member/history',
+            createdAt: r.updatedAt.toISOString(),
+          });
+        } else if (r.status === 'SUBMITTED') {
+          notifications.push({
+            id: `sub-${r.id}`,
+            title: 'Report Under Review',
+            message: `Your report for Week of ${dateFormatted} is currently under review.`,
+            time: r.updatedAt.toISOString(),
+            type: 'info',
+            link: '/member/history',
+            createdAt: r.updatedAt.toISOString(),
+          });
+        }
+      }
+
+      // Check if current week's report exists
+      const now = new Date();
+      const day = now.getDay();
+      const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+      const mondayOfThisWeek = new Date(now.setDate(diff));
+      mondayOfThisWeek.setHours(0, 0, 0, 0);
+
+      const hasThisWeekReport = reports.some(
+        (r) =>
+          new Date(r.weekStart).toISOString().split('T')[0] ===
+          mondayOfThisWeek.toISOString().split('T')[0],
+      );
+
+      if (!hasThisWeekReport) {
+        notifications.unshift({
+          id: `due-current-week`,
+          title: 'Weekly Submission Due',
+          message: `Don't forget to submit your weekly report for this week.`,
+          time: new Date().toISOString(),
+          type: 'info',
+          link: '/member/reports/new',
+          createdAt: new Date().toISOString(),
+        });
+      }
+    } else {
+      // MANAGER
+      const reports = await this.prisma.report.findMany({
+        include: {
+          user: { select: { name: true } },
+          project: { select: { name: true } },
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: 15,
+      });
+
+      for (const r of reports) {
+        const dateFormatted = new Date(r.weekStart).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        });
+        const memberName = r.user?.name || 'Team member';
+
+        if (r.status === 'SUBMITTED') {
+          notifications.push({
+            id: `mgr-sub-${r.id}`,
+            title: 'Pending Report Review',
+            message: `${memberName} submitted a weekly report for Week of ${dateFormatted}.`,
+            time: r.updatedAt.toISOString(),
+            type: 'warning',
+            link: '/manager/reports',
+            createdAt: r.updatedAt.toISOString(),
+          });
+        } else if (r.status === 'NEEDS_CORRECTION') {
+          notifications.push({
+            id: `mgr-nc-${r.id}`,
+            title: 'Correction Pending',
+            message: `${memberName}'s report for Week of ${dateFormatted} is awaiting resubmission.`,
+            time: r.updatedAt.toISOString(),
+            type: 'info',
+            link: '/manager/reports',
+            createdAt: r.updatedAt.toISOString(),
+          });
+        } else if (r.status === 'APPROVED') {
+          notifications.push({
+            id: `mgr-app-${r.id}`,
+            title: 'Report Approved',
+            message: `You approved ${memberName}'s report for Week of ${dateFormatted}.`,
+            time: r.updatedAt.toISOString(),
+            type: 'success',
+            link: '/manager/reports',
+            createdAt: r.updatedAt.toISOString(),
+          });
+        }
+      }
+    }
+
+    return notifications;
+  }
 }

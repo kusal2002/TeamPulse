@@ -1,4 +1,10 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import * as bcrypt from 'bcrypt';
 import { Role } from '@prisma/client';
@@ -168,5 +174,55 @@ export class UsersService {
       where: { id },
       select: { id: true, email: true, name: true },
     });
+  }
+
+  async updateProfile(userId: string, data: { name?: string; email?: string }) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    if (data.email && data.email !== user.email) {
+      const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
+      if (existing) throw new ConflictException('Email address already in use');
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(data.name ? { name: data.name } : {}),
+        ...(data.email ? { email: data.email } : {}),
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async updatePassword(
+    userId: string,
+    data: { currentPassword?: string; newPassword?: string },
+  ) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    if (!data.currentPassword || !data.newPassword) {
+      throw new BadRequestException('Both current and new password are required');
+    }
+
+    const isValid = await bcrypt.compare(data.currentPassword, user.passwordHash);
+    if (!isValid) {
+      throw new ForbiddenException('Incorrect current password');
+    }
+
+    const passwordHash = await bcrypt.hash(data.newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash },
+    });
+
+    return { message: 'Password updated successfully' };
   }
 }

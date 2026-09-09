@@ -21,6 +21,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
+  updateUser: (updatedData: Partial<User>) => void;
   isLoading: boolean;
 }
 
@@ -84,6 +85,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem("token");
   };
 
+  const updateUser = (updatedData: Partial<User>) => {
+    setUser((prev) => {
+      if (!prev) return null;
+      const updated = { ...prev, ...updatedData };
+      localStorage.setItem("user", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const [progress, setProgress] = React.useState(13);
   React.useEffect(() => {
     const timer = setTimeout(() => setProgress(66), 500);
@@ -98,10 +108,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
   }
 
-
   return (
     <AuthContext.Provider
-      value={{ user, token, login, register, logout, isLoading }}
+      value={{ user, token, login, register, logout, updateUser, isLoading }}
     >
       {children}
     </AuthContext.Provider>

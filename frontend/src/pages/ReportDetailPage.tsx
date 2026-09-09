@@ -346,336 +346,353 @@ export default function ReportDetailPage() {
         {/* Main content (left) + review sidebar (right) */}
         <div className="flex flex-col-reverse xl:flex-row gap-6 items-start">
           <div className="flex-1 min-w-0 flex flex-col gap-6">
-
-        {/* Report Content Card */}
-        <Card className="shadow-xs overflow-hidden">
-          <CardHeader className="border-b bg-muted/15 pb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                  <LayersIcon className="size-5 text-primary" />
-                  Report Content (Read-Only)
-                </CardTitle>
-                <CardDescription>
-                  Version{" "}
-                  {currentVersion.versionNumber ||
-                    versions.length - selectedVersionIndex}{" "}
-                  submitted on{" "}
-                  {currentVersion.submittedAt
-                    ? new Date(currentVersion.submittedAt).toLocaleString()
-                    : "N/A"}
-                </CardDescription>
-              </div>
-              {selectedVersionIndex === 0 && (
-                <Badge variant="secondary" className="text-xs">
-                  Latest Version
-                </Badge>
-              )}
-            </div>
-          </CardHeader>
-
-          <CardContent className="p-6 space-y-8">
-            {/* Historical Version Notice Banner */}
-            {selectedVersionIndex > 0 && (
-              <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5 text-sm font-medium">
-                  <HistoryIcon className="size-5 text-amber-600 dark:text-amber-400 shrink-0" />
-                  <span>
-                    You are currently inspecting <strong>Historical Version {currentVersion.versionNumber}</strong> (Submitted on {currentVersion.submittedAt ? new Date(currentVersion.submittedAt).toLocaleString() : "N/A"}).
-                  </span>
+            {/* Report Content Card */}
+            <Card className="shadow-xs overflow-hidden">
+              <CardHeader className="border-b bg-muted/15 pb-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                      <LayersIcon className="size-5 text-primary" />
+                      Report Content
+                    </CardTitle>
+                    <CardDescription>
+                      Version{" "}
+                      {currentVersion.versionNumber ||
+                        versions.length - selectedVersionIndex}{" "}
+                      submitted on{" "}
+                      {currentVersion.submittedAt
+                        ? new Date(currentVersion.submittedAt).toLocaleString()
+                        : "N/A"}
+                    </CardDescription>
+                  </div>
+                  {selectedVersionIndex === 0 && (
+                    <Badge variant="secondary" className="text-xs">
+                      Latest Version
+                    </Badge>
+                  )}
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 text-xs border-amber-500/40 bg-amber-500/20 hover:bg-amber-500/30 shrink-0"
-                  onClick={() => setSelectedVersionIndex(0)}
-                >
-                  Switch to Latest (v{versions[0]?.versionNumber})
-                </Button>
-              </div>
-            )}
+              </CardHeader>
 
-            {/* Tasks Planned for Next Week */}
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
-                <TargetIcon className="size-4 text-blue-500" />
-                Tasks Planned for Next Week
-              </h3>
-              <div className="bg-muted/40 border rounded-lg p-4 text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-                {currentVersion.tasksPlannedNext || "No tasks specified."}
-              </div>
-            </div>
+              <CardContent className="p-6 space-y-8">
+                {/* Historical Version Notice Banner */}
+                {selectedVersionIndex > 0 && (
+                  <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5 text-sm font-medium">
+                      <HistoryIcon className="size-5 text-amber-600 dark:text-amber-400 shrink-0" />
+                      <span>
+                        You are currently inspecting{" "}
+                        <strong>
+                          Historical Version {currentVersion.versionNumber}
+                        </strong>{" "}
+                        (Submitted on{" "}
+                        {currentVersion.submittedAt
+                          ? new Date(
+                              currentVersion.submittedAt,
+                            ).toLocaleString()
+                          : "N/A"}
+                        ).
+                      </span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 text-xs border-amber-500/40 bg-amber-500/20 hover:bg-amber-500/30 shrink-0"
+                      onClick={() => setSelectedVersionIndex(0)}
+                    >
+                      Switch to Latest (v{versions[0]?.versionNumber})
+                    </Button>
+                  </div>
+                )}
 
-            {/* Tasks Completed Table */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
-                <CheckCircle2Icon className="size-4 text-emerald-500" />
-                Tasks Completed
-              </h3>
-              {currentVersion.tasksCompleted &&
-              currentVersion.tasksCompleted.length > 0 ? (
-                <div className="rounded-lg border overflow-hidden">
-                  <Table>
-                    <TableHeader className="bg-muted/50">
-                      <TableRow>
-                        <TableHead className="font-semibold">Task</TableHead>
-                        <TableHead className="text-center font-semibold">
-                          Priority
-                        </TableHead>
-                        <TableHead className="text-center font-semibold">
-                          Planned %
-                        </TableHead>
-                        <TableHead className="text-center font-semibold">
-                          Actual %
-                        </TableHead>
-                        <TableHead className="text-center font-semibold">
-                          Status
-                        </TableHead>
-                        <TableHead className="text-center font-semibold">
-                          Time (Plan/Spent)
-                        </TableHead>
-                        <TableHead className="font-semibold">
-                          Deliverable
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {currentVersion.tasksCompleted.map(
-                        (task: any, index: number) => (
-                          <TableRow key={task.id || index}>
-                            <TableCell className="font-medium text-foreground">
-                              {task.taskName}
-                            </TableCell>
-                            <TableCell className="text-center">
-                              {getPriorityBadge(task.priority)}
-                            </TableCell>
-                            <TableCell className="text-center font-mono text-xs">
-                              {task.plannedPercent}%
-                            </TableCell>
-                            <TableCell className="text-center font-mono text-xs font-semibold">
-                              {task.actualPercent}%
-                            </TableCell>
-                            <TableCell className="text-center">
-                              {getTaskStatusBadge(task.status)}
-                            </TableCell>
-                            <TableCell className="text-center font-mono text-xs text-muted-foreground">
-                              {task.timePlanned || 0}h /{" "}
-                              <span className="font-semibold text-foreground">
-                                {task.timeSpent || 0}h
-                              </span>
-                            </TableCell>
-                            <TableCell className="text-xs text-muted-foreground">
-                              {task.deliverable || "—"}
-                            </TableCell>
-                          </TableRow>
-                        ),
-                      )}
-                    </TableBody>
-                  </Table>
+                {/* Tasks Planned for Next Week */}
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
+                    <TargetIcon className="size-4 text-blue-500" />
+                    Tasks Planned for Next Week
+                  </h3>
+                  <div className="bg-muted/40 border rounded-lg p-4 text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                    {currentVersion.tasksPlannedNext || "No tasks specified."}
+                  </div>
                 </div>
-              ) : (
-                <p className="text-sm text-muted-foreground italic">
-                  No tasks completed recorded for this version.
-                </p>
-              )}
-            </div>
 
-            {/* Blockers / Challenges */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
-                <AlertTriangleIcon className="size-4 text-rose-500" />
-                Blockers / Challenges
-              </h3>
-              {currentVersion.blockers && currentVersion.blockers.length > 0 ? (
-                <ul className="space-y-2">
-                  {currentVersion.blockers.map((b: any, index: number) => (
-                    <li
-                      key={b.id || index}
-                      className={`p-3.5 rounded-lg border text-sm flex items-start gap-3 transition-colors ${
-                        b.isKeyIssue
-                          ? "bg-rose-500/10 border-rose-500/30 text-rose-950 dark:text-rose-200 font-semibold"
-                          : "bg-muted/30 border-border text-foreground"
-                      }`}
-                    >
-                      <AlertTriangleIcon
-                        className={`size-4 shrink-0 mt-0.5 ${b.isKeyIssue ? "text-rose-600 dark:text-rose-400" : "text-amber-500"}`}
-                      />
-                      <div className="flex-1">
-                        <span>{b.description}</span>
-                        {b.isKeyIssue && (
-                          <span className="ml-2 font-bold text-rose-600 dark:text-rose-400">
-                            (Key Issue)
-                          </span>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-muted-foreground italic">
-                  No blockers reported.
-                </p>
-              )}
-            </div>
-
-            {/* Achievements / Highlights */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
-                <SparklesIcon className="size-4 text-emerald-500" />
-                Achievements / Highlights
-              </h3>
-              {currentVersion.achievements &&
-              currentVersion.achievements.length > 0 ? (
-                <ul className="space-y-2">
-                  {currentVersion.achievements.map((a: any, index: number) => (
-                    <li
-                      key={a.id || index}
-                      className={`p-3.5 rounded-lg border text-sm flex items-start gap-3 transition-colors ${
-                        a.isKeyHighlight
-                          ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-950 dark:text-emerald-200 font-semibold"
-                          : "bg-muted/30 border-border text-foreground"
-                      }`}
-                    >
-                      <SparklesIcon
-                        className={`size-4 shrink-0 mt-0.5 ${a.isKeyHighlight ? "text-emerald-600 dark:text-emerald-400" : "text-emerald-500"}`}
-                      />
-                      <div className="flex-1">
-                        <span>{a.description}</span>
-                        {a.isKeyHighlight && (
-                          <span className="ml-2 font-bold text-emerald-600 dark:text-emerald-400">
-                            (Key Highlight)
-                          </span>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-muted-foreground italic">
-                  No achievements reported.
-                </p>
-              )}
-            </div>
-
-            {/* Hours Worked */}
-            {currentVersion.hoursWorked &&
-              currentVersion.hoursWorked.length > 0 && (
+                {/* Tasks Completed Table */}
                 <div className="space-y-3">
                   <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
-                    <ClockIcon className="size-4 text-blue-500" />
-                    Hours Worked
+                    <CheckCircle2Icon className="size-4 text-emerald-500" />
+                    Tasks Completed
                   </h3>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    {currentVersion.hoursWorked.map((h: any, index: number) => (
-                      <li
-                        key={h.id || index}
-                        className="flex items-center justify-between p-3 rounded-lg border bg-muted/20 text-sm"
-                      >
-                        <span className="font-medium text-foreground">
-                          {h.taskType}
-                        </span>
-                        <Badge
-                          variant="secondary"
-                          className="font-mono text-xs"
-                        >
-                          {h.hours}h
-                        </Badge>
-                      </li>
-                    ))}
-                  </ul>
+                  {currentVersion.tasksCompleted &&
+                  currentVersion.tasksCompleted.length > 0 ? (
+                    <div className="rounded-lg border overflow-hidden">
+                      <Table>
+                        <TableHeader className="bg-muted/50">
+                          <TableRow>
+                            <TableHead className="font-semibold">
+                              Task
+                            </TableHead>
+                            <TableHead className="text-center font-semibold">
+                              Priority
+                            </TableHead>
+                            <TableHead className="text-center font-semibold">
+                              Planned %
+                            </TableHead>
+                            <TableHead className="text-center font-semibold">
+                              Actual %
+                            </TableHead>
+                            <TableHead className="text-center font-semibold">
+                              Status
+                            </TableHead>
+                            <TableHead className="text-center font-semibold">
+                              Time (Plan/Spent)
+                            </TableHead>
+                            <TableHead className="font-semibold">
+                              Deliverable
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {currentVersion.tasksCompleted.map(
+                            (task: any, index: number) => (
+                              <TableRow key={task.id || index}>
+                                <TableCell className="font-medium text-foreground">
+                                  {task.taskName}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  {getPriorityBadge(task.priority)}
+                                </TableCell>
+                                <TableCell className="text-center font-mono text-xs">
+                                  {task.plannedPercent}%
+                                </TableCell>
+                                <TableCell className="text-center font-mono text-xs font-semibold">
+                                  {task.actualPercent}%
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  {getTaskStatusBadge(task.status)}
+                                </TableCell>
+                                <TableCell className="text-center font-mono text-xs text-muted-foreground">
+                                  {task.timePlanned || 0}h /{" "}
+                                  <span className="font-semibold text-foreground">
+                                    {task.timeSpent || 0}h
+                                  </span>
+                                </TableCell>
+                                <TableCell className="text-xs text-muted-foreground">
+                                  {task.deliverable || "—"}
+                                </TableCell>
+                              </TableRow>
+                            ),
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">
+                      No tasks completed recorded for this version.
+                    </p>
+                  )}
                 </div>
-              )}
 
-            {/* Optional Notes */}
-            {currentVersion.optionalNotes && (
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
-                  <FileTextIcon className="size-4 text-muted-foreground" />
-                  Optional Notes
-                </h3>
-                <p className="bg-muted/30 border rounded-lg p-4 text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed italic">
-                  {currentVersion.optionalNotes}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                {/* Blockers / Challenges */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
+                    <AlertTriangleIcon className="size-4 text-rose-500" />
+                    Blockers / Challenges
+                  </h3>
+                  {currentVersion.blockers &&
+                  currentVersion.blockers.length > 0 ? (
+                    <ul className="space-y-2">
+                      {currentVersion.blockers.map((b: any, index: number) => (
+                        <li
+                          key={b.id || index}
+                          className={`p-3.5 rounded-lg border text-sm flex items-start gap-3 transition-colors ${
+                            b.isKeyIssue
+                              ? "bg-rose-500/10 border-rose-500/30 text-rose-950 dark:text-rose-200 font-semibold"
+                              : "bg-muted/30 border-border text-foreground"
+                          }`}
+                        >
+                          <AlertTriangleIcon
+                            className={`size-4 shrink-0 mt-0.5 ${b.isKeyIssue ? "text-rose-600 dark:text-rose-400" : "text-amber-500"}`}
+                          />
+                          <div className="flex-1">
+                            <span>{b.description}</span>
+                            {b.isKeyIssue && (
+                              <span className="ml-2 font-bold text-rose-600 dark:text-rose-400">
+                                (Key Issue)
+                              </span>
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">
+                      No blockers reported.
+                    </p>
+                  )}
+                </div>
 
+                {/* Achievements / Highlights */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
+                    <SparklesIcon className="size-4 text-emerald-500" />
+                    Achievements / Highlights
+                  </h3>
+                  {currentVersion.achievements &&
+                  currentVersion.achievements.length > 0 ? (
+                    <ul className="space-y-2">
+                      {currentVersion.achievements.map(
+                        (a: any, index: number) => (
+                          <li
+                            key={a.id || index}
+                            className={`p-3.5 rounded-lg border text-sm flex items-start gap-3 transition-colors ${
+                              a.isKeyHighlight
+                                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-950 dark:text-emerald-200 font-semibold"
+                                : "bg-muted/30 border-border text-foreground"
+                            }`}
+                          >
+                            <SparklesIcon
+                              className={`size-4 shrink-0 mt-0.5 ${a.isKeyHighlight ? "text-emerald-600 dark:text-emerald-400" : "text-emerald-500"}`}
+                            />
+                            <div className="flex-1">
+                              <span>{a.description}</span>
+                              {a.isKeyHighlight && (
+                                <span className="ml-2 font-bold text-emerald-600 dark:text-emerald-400">
+                                  (Key Highlight)
+                                </span>
+                              )}
+                            </div>
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">
+                      No achievements reported.
+                    </p>
+                  )}
+                </div>
+
+                {/* Hours Worked */}
+                {currentVersion.hoursWorked &&
+                  currentVersion.hoursWorked.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
+                        <ClockIcon className="size-4 text-blue-500" />
+                        Hours Worked
+                      </h3>
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        {currentVersion.hoursWorked.map(
+                          (h: any, index: number) => (
+                            <li
+                              key={h.id || index}
+                              className="flex items-center justify-between p-3 rounded-lg border bg-muted/20 text-sm"
+                            >
+                              <span className="font-medium text-foreground">
+                                {h.taskType}
+                              </span>
+                              <Badge
+                                variant="secondary"
+                                className="font-mono text-xs"
+                              >
+                                {h.hours}h
+                              </Badge>
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    </div>
+                  )}
+
+                {/* Optional Notes */}
+                {currentVersion.optionalNotes && (
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
+                      <FileTextIcon className="size-4 text-muted-foreground" />
+                      Optional Notes
+                    </h3>
+                    <p className="bg-muted/30 border rounded-lg p-4 text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed italic">
+                      {currentVersion.optionalNotes}
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Right sidebar: version history + review activity */}
           <aside className="w-full xl:w-[22rem] xl:shrink-0 flex flex-col gap-6 xl:sticky xl:top-6">
-        <VersionHistoryPanel
-          versions={versions}
-          comments={report.comments || []}
-          selectedIndex={selectedVersionIndex}
-          onSelect={setSelectedVersionIndex}
-        />
+            <VersionHistoryPanel
+              versions={versions}
+              comments={report.comments || []}
+              selectedIndex={selectedVersionIndex}
+              onSelect={setSelectedVersionIndex}
+            />
 
-        {/* Review Comments History */}
-        {report.comments && report.comments.length > 0 && (
-          <Card className="shadow-xs">
-            <CardHeader className="border-b bg-muted/15 pb-4">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <MessageSquareIcon className="size-5 text-primary" />
-                Review Comments History
-              </CardTitle>
-              <CardDescription>
-                Feedback and approval history recorded by project managers.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                {report.comments.map((c: any, index: number) => {
-                  const isApproved = c.action === "APPROVED";
-                  const targetVersion = versions.find(
-                    (v: any) => v.id === c.reportVersionId,
-                  );
-                  const versionNum = targetVersion?.versionNumber || "N/A";
+            {/* Review Comments History */}
+            {report.comments && report.comments.length > 0 && (
+              <Card className="shadow-xs">
+                <CardHeader className="border-b bg-muted/15 pb-4">
+                  <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                    <MessageSquareIcon className="size-5 text-primary" />
+                    Review Comments History
+                  </CardTitle>
+                  <CardDescription>
+                    Feedback and approval history recorded by project managers.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {report.comments.map((c: any, index: number) => {
+                      const isApproved = c.action === "APPROVED";
+                      const targetVersion = versions.find(
+                        (v: any) => v.id === c.reportVersionId,
+                      );
+                      const versionNum = targetVersion?.versionNumber || "N/A";
 
-                  return (
-                    <div
-                      key={c.id || index}
-                      className={`p-4 rounded-xl border-l-4 transition-all ${
-                        isApproved
-                          ? "border-l-emerald-500 bg-emerald-500/5 border-emerald-500/20"
-                          : "border-l-amber-500 bg-amber-500/5 border-amber-500/20"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                        <span className="font-semibold text-foreground text-sm flex items-center gap-2">
-                          <UserIcon className="size-3.5 text-primary" />
-                          {c.manager?.name || "Manager"}
-                        </span>
-                        <span>
-                          {c.createdAt
-                            ? new Date(c.createdAt).toLocaleString()
-                            : ""}
-                        </span>
-                      </div>
+                      return (
+                        <div
+                          key={c.id || index}
+                          className={`p-4 rounded-xl border-l-4 transition-all ${
+                            isApproved
+                              ? "border-l-emerald-500 bg-emerald-500/5 border-emerald-500/20"
+                              : "border-l-amber-500 bg-amber-500/5 border-amber-500/20"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                            <span className="font-semibold text-foreground text-sm flex items-center gap-2">
+                              <UserIcon className="size-3.5 text-primary" />
+                              {c.manager?.name || "Manager"}
+                            </span>
+                            <span>
+                              {c.createdAt
+                                ? new Date(c.createdAt).toLocaleString()
+                                : ""}
+                            </span>
+                          </div>
 
-                      <p
-                        className={`font-medium text-sm my-1 ${isApproved ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}
-                      >
-                        {isApproved ? "✅ Approved" : "🔄 Requested Changes"}{" "}
-                        (Against Version {versionNum})
-                      </p>
+                          <p
+                            className={`font-medium text-sm my-1 ${isApproved ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}
+                          >
+                            {isApproved
+                              ? "✅ Approved"
+                              : "🔄 Requested Changes"}{" "}
+                            (Against Version {versionNum})
+                          </p>
 
-                      <p className="text-sm text-foreground mt-2 leading-relaxed bg-background/60 p-3 rounded-lg border">
-                        {c.comment}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                          <p className="text-sm text-foreground mt-2 leading-relaxed bg-background/60 p-3 rounded-lg border">
+                            {c.comment}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-        {/* MANAGER REVIEW ACTION */}
-        {isManager && report.status === "SUBMITTED" && (
-          <ManagerReviewForm reportId={report.id} />
-        )}
+            {/* MANAGER REVIEW ACTION */}
+            {isManager && report.status === "SUBMITTED" && (
+              <ManagerReviewForm reportId={report.id} />
+            )}
           </aside>
         </div>
       </div>
@@ -740,7 +757,10 @@ function VersionHistoryPanel({
                       Version {versionNumber}
                     </span>
                     {idx === 0 && (
-                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] px-1.5 py-0"
+                      >
                         Latest
                       </Badge>
                     )}
@@ -768,7 +788,9 @@ function VersionHistoryPanel({
 }
 
 function ManagerReviewForm({ reportId }: { reportId: string }) {
-  const [action, setAction] = useState<"APPROVED" | "REQUESTED_CHANGES">("APPROVED");
+  const [action, setAction] = useState<"APPROVED" | "REQUESTED_CHANGES">(
+    "APPROVED",
+  );
   const [comment, setComment] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -785,11 +807,13 @@ function ManagerReviewForm({ reportId }: { reportId: string }) {
 
       if (action === "APPROVED") {
         toast.success("Report approved", {
-          description: "The team member has been notified. No further edits are expected.",
+          description:
+            "The team member has been notified. No further edits are expected.",
         });
       } else {
         toast.success("Changes requested", {
-          description: "The report is back with the team member for correction.",
+          description:
+            "The report is back with the team member for correction.",
         });
       }
       navigate("/manager");

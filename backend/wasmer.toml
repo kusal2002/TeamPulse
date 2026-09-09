@@ -1,0 +1,17 @@
+[package]
+name = "teampulse-backend"
+version = "0.1.0"
+description = "TeamPulse NestJS Backend API"
+
+[dependencies]
+
+[[command]]
+name = "server"
+module = "server"
+runner = "https://webc.org/runner/node"
+
+[command.annotations.wasi]
+main-args = ["dist/main.js"]
+
+[build]
+build-command = "npm run build"
