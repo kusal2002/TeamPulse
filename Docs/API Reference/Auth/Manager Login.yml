@@ -1,0 +1,65 @@
+info:
+  name: Manager Login
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: http://localhost:3000/auth/login
+  body:
+    type: json
+    data: |-
+      {
+        "email": "manager@gmail.com",
+        "password": "manager123"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example Manager Login
+    request:
+      url: http://localhost:3000/auth/login
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "email": "manager@gmail.com",
+            "password": "manager123"
+          }
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: x-powered-by
+          value: Express
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "375"
+        - name: etag
+          value: W/"177-x2HFA/2/FjWzDBDYnVt7yD/40jo"
+        - name: date
+          value: Sun, 06 Sep 2026 10:17:59 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhMDUwNDBmYS00NmQ5LTQzY2UtYWVjNi0yYjE4NTM1ZWMzYTciLCJlbWFpbCI6Im1hbmFnZXJAZ21haWwuY29tIiwicm9sZSI6Ik1BTkFHRVIiLCJpYXQiOjE3ODg2ODk4NzksImV4cCI6MTc4OTI5NDY3OX0.IJTffjrkDO_TZ5SQp3JOij5ydiYbRzuUaPEkNFYYCiA",
+            "user": {
+              "id": "a05040fa-46d9-43ce-aec6-2b18535ec3a7",
+              "email": "manager@gmail.com",
+              "name": "",
+              "role": "MANAGER"
+            }
+          }

@@ -1,0 +1,70 @@
+info:
+  name: View All Team Member Reports
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:3000/reports
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhMDUwNDBmYS00NmQ5LTQzY2UtYWVjNi0yYjE4NTM1ZWMzYTciLCJlbWFpbCI6Im1hbmFnZXJAZ21haWwuY29tIiwicm9sZSI6Ik1BTkFHRVIiLCJpYXQiOjE3ODg2ODk4NzksImV4cCI6MTc4OTI5NDY3OX0.IJTffjrkDO_TZ5SQp3JOij5ydiYbRzuUaPEkNFYYCiA
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example Manager All Team Member Reports
+    request:
+      url: http://localhost:3000/reports
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: x-powered-by
+          value: Express
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "732"
+        - name: etag
+          value: W/"2dc-UpDMrRg9zYW8NUbs9SfhWKvghUA"
+        - name: date
+          value: Sun, 06 Sep 2026 10:41:21 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "id": "903a2459-8ee5-40bc-8df2-fa5abfffc9a2",
+              "userId": "e41a4819-90f4-4747-bed9-fb6c74024a64",
+              "projectId": "a3d3c9ab-e7fe-47cd-874c-bf9ad5f027a7",
+              "weekStart": "2026-09-01T00:00:00.000Z",
+              "status": "SUBMITTED",
+              "createdAt": "2026-09-06T10:36:45.443Z",
+              "updatedAt": "2026-09-06T10:39:41.777Z",
+              "user": {
+                "id": "e41a4819-90f4-4747-bed9-fb6c74024a64",
+                "email": "kusalsalpura@gmail.com",
+                "passwordHash": "$2b$10$liqOGwMn1.RLTvYey4Q1W.ZJH8em6x3cd5eByx6a0xW/OxeV/95kG",
+                "name": "Kusal",
+                "role": "TEAM_MEMBER",
+                "createdAt": "2026-09-06T07:28:22.639Z",
+                "updatedAt": "2026-09-06T07:28:22.639Z"
+              },
+              "project": {
+                "id": "a3d3c9ab-e7fe-47cd-874c-bf9ad5f027a7",
+                "name": "Client A Portal",
+                "description": "Frontend development for Client A",
+                "createdAt": "2026-09-06T10:18:50.462Z"
+              }
+            }
+          ]

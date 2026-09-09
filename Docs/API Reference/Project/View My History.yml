@@ -1,0 +1,71 @@
+info:
+  name: View My History
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: http://localhost:3000/reports/my-history
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNDFhNDgxOS05MGY0LTQ3NDctYmVkOS1mYjZjNzQwMjRhNjQiLCJlbWFpbCI6Imt1c2Fsc2FscHVyYUBnbWFpbC5jb20iLCJyb2xlIjoiVEVBTV9NRU1CRVIiLCJpYXQiOjE3ODg2OTAxMTksImV4cCI6MTc4OTI5NDkxOX0.qtOEAyh-JWYMzxf1UaWXFddPMk6twTb0exlHGr-ed9k
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example My History
+    request:
+      url: http://localhost:3000/reports/my-history
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: x-powered-by
+          value: Express
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "722"
+        - name: etag
+          value: W/"2d2-DwEpSw6lPT+XMiaMl9OhBwFlu7E"
+        - name: date
+          value: Sun, 06 Sep 2026 10:37:53 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "id": "903a2459-8ee5-40bc-8df2-fa5abfffc9a2",
+              "userId": "e41a4819-90f4-4747-bed9-fb6c74024a64",
+              "projectId": "a3d3c9ab-e7fe-47cd-874c-bf9ad5f027a7",
+              "weekStart": "2026-09-01T00:00:00.000Z",
+              "status": "DRAFT",
+              "createdAt": "2026-09-06T10:36:45.443Z",
+              "updatedAt": "2026-09-06T10:36:45.443Z",
+              "project": {
+                "id": "a3d3c9ab-e7fe-47cd-874c-bf9ad5f027a7",
+                "name": "Client A Portal",
+                "description": "Frontend development for Client A",
+                "createdAt": "2026-09-06T10:18:50.462Z"
+              },
+              "versions": [
+                {
+                  "id": "fab67046-2550-40b8-976d-f7f9181c6d7d",
+                  "reportId": "903a2459-8ee5-40bc-8df2-fa5abfffc9a2",
+                  "versionNumber": 1,
+                  "submittedAt": "2026-09-06T10:36:45.443Z",
+                  "tasksPlannedNext": "Finish the dashboard UI and write unit tests.",
+                  "optionalNotes": "Taking Friday off."
+                }
+              ]
+            }
+          ]

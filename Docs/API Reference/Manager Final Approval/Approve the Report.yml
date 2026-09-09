@@ -1,0 +1,78 @@
+info:
+  name: Approve the Report
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:3000/reports/{{REPORT_ID}}/review
+  body:
+    type: json
+    data: |-
+      {
+        "action": "APPROVED",
+        "comment": "Looks great, thanks for the updates!"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhMDUwNDBmYS00NmQ5LTQzY2UtYWVjNi0yYjE4NTM1ZWMzYTciLCJlbWFpbCI6Im1hbmFnZXJAZ21haWwuY29tIiwicm9sZSI6Ik1BTkFHRVIiLCJpYXQiOjE3ODg2ODk4NzksImV4cCI6MTc4OTI5NDY3OX0.IJTffjrkDO_TZ5SQp3JOij5ydiYbRzuUaPEkNFYYCiA
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example Approve the Report
+    request:
+      url: http://localhost:3000/reports/{{REPORT_ID}}/review
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "action": "APPROVED",
+            "comment": "Looks great, thanks for the updates!"
+          }
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: x-powered-by
+          value: Express
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "595"
+        - name: etag
+          value: W/"253-lVxFt/HbovKXy5LP8smjpp93z6A"
+        - name: date
+          value: Sun, 06 Sep 2026 10:50:47 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "id": "903a2459-8ee5-40bc-8df2-fa5abfffc9a2",
+              "userId": "e41a4819-90f4-4747-bed9-fb6c74024a64",
+              "projectId": "a3d3c9ab-e7fe-47cd-874c-bf9ad5f027a7",
+              "weekStart": "2026-09-01T00:00:00.000Z",
+              "status": "APPROVED",
+              "createdAt": "2026-09-06T10:36:45.443Z",
+              "updatedAt": "2026-09-06T10:50:47.827Z"
+            },
+            {
+              "id": "bd21762c-7dd2-4a9d-b8d0-d039eb1bfb3b",
+              "reportId": "903a2459-8ee5-40bc-8df2-fa5abfffc9a2",
+              "reportVersionId": "eee2cf37-a949-4112-9dae-fd142e21cfbb",
+              "managerId": "a05040fa-46d9-43ce-aec6-2b18535ec3a7",
+              "comment": "Looks great, thanks for the updates!",
+              "action": "APPROVED",
+              "createdAt": "2026-09-06T10:50:47.830Z"
+            }
+          ]

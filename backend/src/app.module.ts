@@ -9,6 +9,8 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard.js';
 import { RolesGuard } from './common/guards/roles.guard.js';
 import { APP_GUARD } from '@nestjs/core';
+import { ProjectsModule } from './projects/projects.module.js';
+import { ReportsModule } from './reports/reports.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -20,6 +22,8 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     PrismaModule,
     UsersModule,
     AuthModule,
+    ProjectsModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,0 +1,64 @@
+info:
+  name: Create Project
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/projects
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Client A Portal",
+        "description": "Frontend development for Client A"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhMDUwNDBmYS00NmQ5LTQzY2UtYWVjNi0yYjE4NTM1ZWMzYTciLCJlbWFpbCI6Im1hbmFnZXJAZ21haWwuY29tIiwicm9sZSI6Ik1BTkFHRVIiLCJpYXQiOjE3ODg2ODk4NzksImV4cCI6MTc4OTI5NDY3OX0.IJTffjrkDO_TZ5SQp3JOij5ydiYbRzuUaPEkNFYYCiA
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: example project
+    request:
+      url: http://localhost:3000/projects
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "name": "Client A Portal",
+            "description": "Frontend development for Client A"
+          }
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: x-powered-by
+          value: Express
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "159"
+        - name: etag
+          value: W/"9f-izElDxbTahPVSTvF0ouaIgQUDcw"
+        - name: date
+          value: Sun, 06 Sep 2026 10:18:50 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "id": "a3d3c9ab-e7fe-47cd-874c-bf9ad5f027a7",
+            "name": "Client A Portal",
+            "description": "Frontend development for Client A",
+            "createdAt": "2026-09-06T10:18:50.462Z"
+          }
