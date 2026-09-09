@@ -18,7 +18,6 @@ import {
   FolderIcon,
   UsersIcon,
   FileChartColumnIcon,
-  FileTextIcon,
 } from "lucide-react";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -51,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           title: "Team Members",
           url: "/manager/team",
           icon: <UsersIcon />,
-          isActive: location.pathname === "/manager/team",
+          isActive: location.pathname.startsWith("/manager/team"),
         },
       ]
     : [

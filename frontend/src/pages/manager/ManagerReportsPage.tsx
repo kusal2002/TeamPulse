@@ -40,11 +40,8 @@ import {
   FolderIcon,
   CalendarIcon,
   EyeIcon,
-  ShieldAlertIcon,
   SearchIcon,
   ArrowLeftIcon,
-  LayersIcon,
-  UsersIcon,
   XIcon,
 } from "lucide-react";
 
@@ -158,57 +155,6 @@ export default function ManagerReportsPage() {
     );
   }
 
-  // --- Overview metrics (always across every report, never the filtered view) ---
-  const allReports: any[] = reports || [];
-  const totalReports = allReports.length;
-  const countBy = (status: string) =>
-    allReports.filter((r: any) => r.status === status).length;
-
-  const statusBreakdown = [
-    {
-      key: "DRAFT",
-      label: "Draft",
-      count: countBy("DRAFT"),
-      bar: "bg-muted-foreground/40",
-      dot: "bg-muted-foreground/50",
-    },
-    {
-      key: "SUBMITTED",
-      label: "Submitted",
-      count: countBy("SUBMITTED"),
-      bar: "bg-blue-500",
-      dot: "bg-blue-500",
-    },
-    {
-      key: "NEEDS_CORRECTION",
-      label: "Needs Correction",
-      count: countBy("NEEDS_CORRECTION"),
-      bar: "bg-amber-500",
-      dot: "bg-amber-500",
-    },
-    {
-      key: "APPROVED",
-      label: "Approved",
-      count: countBy("APPROVED"),
-      bar: "bg-emerald-500",
-      dot: "bg-emerald-500",
-    },
-  ];
-
-  const pendingReviewCount = countBy("SUBMITTED");
-  const needsCorrectionCount = countBy("NEEDS_CORRECTION");
-  const approvedCount = countBy("APPROVED");
-
-  const completionRate =
-    totalReports > 0 ? Math.round((approvedCount / totalReports) * 100) : 0;
-
-  const memberCount = new Set(
-    allReports.map((r: any) => r.userId).filter(Boolean),
-  ).size;
-  const projectCount = new Set(
-    allReports.map((r: any) => r.projectId).filter(Boolean),
-  ).size;
-
   return (
     <AppLayout title="Team Reports">
       <div className="flex flex-col gap-6 mx-auto w-full pb-8">
@@ -217,7 +163,7 @@ export default function ManagerReportsPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Team Reports</h1>
             <p className="text-sm text-muted-foreground">
-              Comprehensive overview of weekly status reports submitted by all team members.
+              Directory of weekly status reports submitted by team members.
             </p>
           </div>
           <Link to="/manager">
@@ -227,159 +173,6 @@ export default function ManagerReportsPage() {
             </Button>
           </Link>
         </div>
-
-        {/* Team Reporting Overview */}
-        <Card className="shadow-xs border overflow-hidden">
-          <CardHeader className="border-b bg-muted/15 pb-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <CardTitle className="text-base font-semibold flex items-center gap-2">
-                  <LayersIcon className="size-4 text-primary" />
-                  Reporting Overview
-                </CardTitle>
-                <CardDescription>
-                  Where every weekly report currently sits in the review cycle.
-                </CardDescription>
-              </div>
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  <UsersIcon className="size-3.5" />
-                  {memberCount} member{memberCount === 1 ? "" : "s"}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <FolderIcon className="size-3.5" />
-                  {projectCount} project{projectCount === 1 ? "" : "s"}
-                </span>
-              </div>
-            </div>
-          </CardHeader>
-
-          <CardContent className="p-5 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto] gap-6 items-start">
-            {/* Status distribution */}
-            <div className="min-w-0 flex flex-col gap-3">
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold tracking-tight">
-                  {totalReports}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  report{totalReports === 1 ? "" : "s"} logged in total
-                </span>
-              </div>
-
-              {/* One stacked bar reads faster than four separate numbers */}
-              <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-muted">
-                {totalReports > 0 &&
-                  statusBreakdown
-                    .filter((seg) => seg.count > 0)
-                    .map((seg) => (
-                      <div
-                        key={seg.key}
-                        className={seg.bar}
-                        style={{ width: `${(seg.count / totalReports) * 100}%` }}
-                        title={`${seg.label}: ${seg.count}`}
-                      />
-                    ))}
-              </div>
-
-              {/* The legend doubles as a status filter for the table below */}
-              <div className="flex flex-wrap gap-x-4 gap-y-2">
-                {statusBreakdown.map((seg) => {
-                  const isActive = filterStatus === seg.key;
-                  const percent =
-                    totalReports > 0
-                      ? Math.round((seg.count / totalReports) * 100)
-                      : 0;
-                  return (
-                    <button
-                      key={seg.key}
-                      type="button"
-                      onClick={() => setFilterStatus(isActive ? "ALL" : seg.key)}
-                      aria-pressed={isActive}
-                      className={`flex items-center gap-2 rounded-md px-1.5 py-1 text-xs transition-colors cursor-pointer ${
-                        isActive ? "bg-muted" : "hover:bg-muted/60"
-                      }`}
-                    >
-                      <span className={`size-2 rounded-full ${seg.dot}`} />
-                      <span className="font-medium text-foreground">
-                        {seg.label}
-                      </span>
-                      <span className="text-muted-foreground tabular-nums">
-                        {seg.count} &middot; {percent}%
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* What needs the manager's attention right now */}
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 w-full lg:w-auto">
-              <button
-                type="button"
-                onClick={() =>
-                  setFilterStatus(
-                    filterStatus === "SUBMITTED" ? "ALL" : "SUBMITTED",
-                  )
-                }
-                aria-pressed={filterStatus === "SUBMITTED"}
-                className={`rounded-xl border p-3 text-left transition-colors cursor-pointer lg:w-36 ${
-                  filterStatus === "SUBMITTED"
-                    ? "border-blue-500/50 bg-blue-500/10"
-                    : "hover:bg-muted/40"
-                }`}
-              >
-                <div className="flex items-center justify-between text-blue-600 dark:text-blue-400">
-                  <span className="text-2xl font-bold tabular-nums">
-                    {pendingReviewCount}
-                  </span>
-                  <ClockIcon className="size-4" />
-                </div>
-                <p className="text-xs font-medium text-foreground mt-1">
-                  Awaiting review
-                </p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  setFilterStatus(
-                    filterStatus === "NEEDS_CORRECTION"
-                      ? "ALL"
-                      : "NEEDS_CORRECTION",
-                  )
-                }
-                aria-pressed={filterStatus === "NEEDS_CORRECTION"}
-                className={`rounded-xl border p-3 text-left transition-colors cursor-pointer lg:w-36 ${
-                  filterStatus === "NEEDS_CORRECTION"
-                    ? "border-amber-500/50 bg-amber-500/10"
-                    : "hover:bg-muted/40"
-                }`}
-              >
-                <div className="flex items-center justify-between text-amber-600 dark:text-amber-400">
-                  <span className="text-2xl font-bold tabular-nums">
-                    {needsCorrectionCount}
-                  </span>
-                  <ShieldAlertIcon className="size-4" />
-                </div>
-                <p className="text-xs font-medium text-foreground mt-1">
-                  With the member
-                </p>
-              </button>
-
-              <div className="rounded-xl border p-3 col-span-2 lg:col-span-1 lg:w-36">
-                <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
-                  <span className="text-2xl font-bold tabular-nums">
-                    {completionRate}%
-                  </span>
-                  <CheckCircle2Icon className="size-4" />
-                </div>
-                <p className="text-xs font-medium text-foreground mt-1">
-                  Approved
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Filters Card */}
         <Card className="shadow-xs bg-card/60 backdrop-blur-xs">

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../lib/axios";
 import { AppLayout } from "@/pages/Layout/app-layout";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardHeader,
@@ -18,44 +19,25 @@ import {
   TableRow,
   TableHead,
   TableCell,
-  TableCaption,
   TableFooter,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UsersIcon, MailIcon, ShieldIcon, SearchIcon, FileTextIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { UsersIcon, MailIcon, ShieldIcon, SearchIcon, FileTextIcon, ExternalLinkIcon } from "lucide-react";
 
 export default function TeamMembersPage() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch reports to aggregate member statistics
-  const { data: reports, isLoading } = useQuery({
-    queryKey: ["manager-reports-team"],
-    queryFn: async () => (await api.get("/reports")).data,
+  // Fetch users from backend /users API
+  const { data: users, isLoading } = useQuery({
+    queryKey: ["users-directory"],
+    queryFn: async () => (await api.get("/users")).data,
   });
 
-  // Extract unique team members from reports
-  const memberMap = new Map<string, { id: string; name: string; email: string; role: string; reportCount: number }>();
-
-  reports?.forEach((r: any) => {
-    if (r.user) {
-      const existing = memberMap.get(r.user.id);
-      if (existing) {
-        existing.reportCount += 1;
-      } else {
-        memberMap.set(r.user.id, {
-          id: r.user.id,
-          name: r.user.name || "N/A",
-          email: r.user.email || "N/A",
-          role: r.user.role || "TEAM_MEMBER",
-          reportCount: 1,
-        });
-      }
-    }
-  });
-
-  const members = Array.from(memberMap.values()).filter(
-    (m) =>
+  const members = (users || []).filter(
+    (m: any) =>
       m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       m.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -87,9 +69,9 @@ export default function TeamMembersPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Team Members</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Team Directory</h1>
             <p className="text-sm text-muted-foreground">
-              Directory of team members submitting weekly status updates.
+              Directory of active team members. Click any member to view their report history and performance profile.
             </p>
           </div>
           <div className="relative w-full md:w-64">
@@ -120,9 +102,6 @@ export default function TeamMembersPage() {
           </CardHeader>
           <CardContent className="p-0">
             <Table>
-              <TableCaption className="pb-4">
-                Directory of active team members in TeamPulse.
-              </TableCaption>
               <TableHeader className="bg-muted/40">
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="w-[260px] font-semibold text-xs text-muted-foreground uppercase tracking-wider">
@@ -134,15 +113,22 @@ export default function TeamMembersPage() {
                   <TableHead className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">
                     Role
                   </TableHead>
-                  <TableHead className="text-right font-semibold text-xs text-muted-foreground uppercase tracking-wider">
+                  <TableHead className="text-center font-semibold text-xs text-muted-foreground uppercase tracking-wider">
                     Reports Filed
+                  </TableHead>
+                  <TableHead className="text-right font-semibold text-xs text-muted-foreground uppercase tracking-wider">
+                    Action
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {members.length > 0 ? (
-                  members.map((m) => (
-                    <TableRow key={m.id} className="hover:bg-muted/40 transition-colors">
+                  members.map((m: any) => (
+                    <TableRow
+                      key={m.id}
+                      className="hover:bg-muted/40 transition-colors cursor-pointer"
+                      onClick={() => navigate(`/manager/team/${m.id}`)}
+                    >
                       <TableCell className="font-medium text-foreground">
                         <div className="flex items-center gap-3">
                           <Avatar className="size-8">
@@ -150,7 +136,7 @@ export default function TeamMembersPage() {
                               {getInitials(m.name)}
                             </AvatarFallback>
                           </Avatar>
-                          <span>{m.name}</span>
+                          <span className="hover:underline font-semibold">{m.name}</span>
                         </div>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-sm">
@@ -168,17 +154,31 @@ export default function TeamMembersPage() {
                           {m.role === "MANAGER" ? "Manager" : "Team Member"}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right font-mono font-bold text-foreground">
-                        <div className="flex items-center justify-end gap-1 text-sm">
+                      <TableCell className="text-center font-mono font-bold text-foreground">
+                        <div className="flex items-center justify-center gap-1 text-sm">
                           <FileTextIcon className="size-3.5 text-muted-foreground" />
-                          <span>{m.reportCount}</span>
+                          <span>{m.reportCount || 0}</span>
                         </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 text-xs gap-1"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/manager/team/${m.id}`);
+                          }}
+                        >
+                          View Profile
+                          <ExternalLinkIcon className="size-3" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
+                    <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
                       <div className="flex flex-col items-center justify-center gap-1">
                         <UsersIcon className="size-8 text-muted-foreground/40 mb-1" />
                         <p className="font-medium text-foreground">No members found</p>
@@ -193,7 +193,7 @@ export default function TeamMembersPage() {
               {members.length > 0 && (
                 <TableFooter>
                   <TableRow>
-                    <TableCell colSpan={3} className="font-medium text-xs text-muted-foreground">
+                    <TableCell colSpan={4} className="font-medium text-xs text-muted-foreground">
                       Total Active Directory Members
                     </TableCell>
                     <TableCell className="text-right font-mono font-bold text-foreground">

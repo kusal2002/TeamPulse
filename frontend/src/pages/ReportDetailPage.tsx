@@ -375,6 +375,26 @@ export default function ReportDetailPage() {
           </CardHeader>
 
           <CardContent className="p-6 space-y-8">
+            {/* Historical Version Notice Banner */}
+            {selectedVersionIndex > 0 && (
+              <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 text-sm font-medium">
+                  <HistoryIcon className="size-5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span>
+                    You are currently inspecting <strong>Historical Version {currentVersion.versionNumber}</strong> (Submitted on {currentVersion.submittedAt ? new Date(currentVersion.submittedAt).toLocaleString() : "N/A"}).
+                  </span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs border-amber-500/40 bg-amber-500/20 hover:bg-amber-500/30 shrink-0"
+                  onClick={() => setSelectedVersionIndex(0)}
+                >
+                  Switch to Latest (v{versions[0]?.versionNumber})
+                </Button>
+              </div>
+            )}
+
             {/* Tasks Planned for Next Week */}
             <div className="space-y-2">
               <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
