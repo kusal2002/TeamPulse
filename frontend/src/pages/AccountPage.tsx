@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import api from "@/lib/axios";
 import { AppLayout } from "@/pages/Layout/app-layout";
 import {
   Card,
@@ -20,10 +21,11 @@ import {
   KeyRoundIcon,
   CheckCircle2Icon,
   UserCheckIcon,
+  Loader2Icon,
 } from "lucide-react";
 
 export default function AccountPage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
 
@@ -31,6 +33,8 @@ export default function AccountPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const [passwordSaved, setPasswordSaved] = useState(false);
 
@@ -44,13 +48,29 @@ export default function AccountPage() {
       .slice(0, 2);
   };
 
-  const handleUpdateProfile = (e: React.FormEvent) => {
+  const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    setProfileSaved(true);
-    setTimeout(() => setProfileSaved(false), 3000);
+    setIsUpdatingProfile(true);
+    try {
+      const res = await api.patch("/users/me", { name, email });
+      const updatedUser = res.data;
+      updateUser({
+        name: updatedUser.name || name,
+        email: updatedUser.email || email,
+      });
+      toast.success("Profile details updated successfully!");
+      setProfileSaved(true);
+      setTimeout(() => setProfileSaved(false), 3000);
+    } catch (err: any) {
+      toast.error(
+        err.response?.data?.message || "Failed to update profile details",
+      );
+    } finally {
+      setIsUpdatingProfile(false);
+    }
   };
 
-  const handleChangePassword = (e: React.FormEvent) => {
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       toast.error("Passwords do not match", {
@@ -58,11 +78,21 @@ export default function AccountPage() {
       });
       return;
     }
-    setPasswordSaved(true);
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
-    setTimeout(() => setPasswordSaved(false), 3000);
+
+    setIsUpdatingPassword(true);
+    try {
+      await api.post("/users/me/password", { currentPassword, newPassword });
+      toast.success("Password updated successfully!");
+      setPasswordSaved(true);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setTimeout(() => setPasswordSaved(false), 3000);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to update password");
+    } finally {
+      setIsUpdatingPassword(false);
+    }
   };
 
   return (
@@ -158,8 +188,12 @@ export default function AccountPage() {
                   ) : (
                     <span />
                   )}
-                  <Button type="submit" size="sm" className="gap-2 font-medium cursor-pointer">
-                    <UserCheckIcon className="size-4" />
+                  <Button type="submit" size="sm" disabled={isUpdatingProfile} className="gap-2 font-medium cursor-pointer">
+                    {isUpdatingProfile ? (
+                      <Loader2Icon className="size-4 animate-spin" />
+                    ) : (
+                      <UserCheckIcon className="size-4" />
+                    )}
                     Save Details
                   </Button>
                 </div>
@@ -230,8 +264,12 @@ export default function AccountPage() {
                   ) : (
                     <span />
                   )}
-                  <Button type="submit" size="sm" variant="outline" className="gap-2 font-medium cursor-pointer">
-                    <KeyRoundIcon className="size-4 text-amber-500" />
+                  <Button type="submit" size="sm" variant="outline" disabled={isUpdatingPassword} className="gap-2 font-medium cursor-pointer">
+                    {isUpdatingPassword ? (
+                      <Loader2Icon className="size-4 animate-spin" />
+                    ) : (
+                      <KeyRoundIcon className="size-4 text-amber-500" />
+                    )}
                     Update Password
                   </Button>
                 </div>

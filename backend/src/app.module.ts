@@ -11,6 +11,7 @@ import { RolesGuard } from './common/guards/roles.guard.js';
 import { APP_GUARD } from '@nestjs/core';
 import { ProjectsModule } from './projects/projects.module.js';
 import { ReportsModule } from './reports/reports.module.js';
+import { AiModule } from './ai/ai.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -24,6 +25,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     AuthModule,
     ProjectsModule,
     ReportsModule,
+    AiModule,
   ],
   controllers: [AppController],
   providers: [
