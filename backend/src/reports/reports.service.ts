@@ -1,11 +1,50 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateReportDto } from './dto/report.dto.js';
+function sanitizeTasks(tasks: any[]) {
+  if (!Array.isArray(tasks)) return [];
+  return tasks.map(({ id, reportVersionId, ...rest }) => ({
+    taskName: rest.taskName || '',
+    priority: rest.priority || 'Medium',
+    plannedPercent: Number(rest.plannedPercent) || 0,
+    actualPercent: Number(rest.actualPercent) || 0,
+    status: rest.status || 'In Progress',
+    timePlanned: Number(rest.timePlanned) || 0,
+    timeSpent: Number(rest.timeSpent) || 0,
+    deliverable: rest.deliverable || '',
+  }));
+}
+
+function sanitizeBlockers(blockers: any[]) {
+  if (!Array.isArray(blockers)) return [];
+  return blockers.map(({ id, reportVersionId, ...rest }) => ({
+    description: rest.description || '',
+    isKeyIssue: Boolean(rest.isKeyIssue),
+  }));
+}
+
+function sanitizeAchievements(achievements: any[]) {
+  if (!Array.isArray(achievements)) return [];
+  return achievements.map(({ id, reportVersionId, ...rest }) => ({
+    description: rest.description || '',
+    isKeyHighlight: Boolean(rest.isKeyHighlight),
+  }));
+}
+
+function sanitizeHours(hours: any[]) {
+  if (!Array.isArray(hours)) return [];
+  return hours.map(({ id, reportVersionId, ...rest }) => ({
+    taskType: rest.taskType || 'Development',
+    hours: Number(rest.hours) || 0,
+  }));
+}
+
 @Injectable()
 export class ReportsService {
   constructor(private prisma: PrismaService) {}
@@ -14,26 +53,51 @@ export class ReportsService {
   async createDraft(userId: string, dto: CreateReportDto) {
     const weekStart = new Date(dto.weekStart);
 
-    return this.prisma.report.create({
-      data: {
-        userId,
-        projectId: dto.projectId,
-        weekStart,
-        status: 'DRAFT',
-        versions: {
-          create: {
-            versionNumber: 1,
-            tasksPlannedNext: dto.tasksPlannedNext,
-            optionalNotes: dto.optionalNotes,
-            tasksCompleted: { create: dto.tasksCompleted },
-            blockers: { create: dto.blockers },
-            achievements: { create: dto.achievements },
-            hoursWorked: { create: dto.hoursWorked },
-          },
+    // Check if a report for this user and weekStart already exists
+    const existing = await this.prisma.report.findUnique({
+      where: {
+        userId_weekStart: {
+          userId,
+          weekStart,
         },
       },
-      include: { versions: true },
     });
+
+    if (existing) {
+      throw new ConflictException(
+        `A report already exists for the week starting ${weekStart.toISOString().split('T')[0]}. Please edit your existing report instead.`,
+      );
+    }
+
+    try {
+      return await this.prisma.report.create({
+        data: {
+          userId,
+          projectId: dto.projectId,
+          weekStart,
+          status: 'DRAFT',
+          versions: {
+            create: {
+              versionNumber: 1,
+              tasksPlannedNext: dto.tasksPlannedNext,
+              optionalNotes: dto.optionalNotes,
+              tasksCompleted: { create: sanitizeTasks(dto.tasksCompleted) },
+              blockers: { create: sanitizeBlockers(dto.blockers) },
+              achievements: { create: sanitizeAchievements(dto.achievements) },
+              hoursWorked: { create: sanitizeHours(dto.hoursWorked) },
+            },
+          },
+        },
+        include: { versions: true },
+      });
+    } catch (error: any) {
+      if (error?.code === 'P2002') {
+        throw new ConflictException(
+          `A report already exists for the week starting ${weekStart.toISOString().split('T')[0]}. Please edit your existing report instead.`,
+        );
+      }
+      throw error;
+    }
   }
 
   // 2. Update Draft / Save Correction
@@ -47,6 +111,17 @@ export class ReportsService {
       throw new BadRequestException(
         'Can only edit drafts or reports needing correction',
       );
+    }
+
+    // Update report metadata if changed
+    if (dto.projectId || dto.weekStart) {
+      const updateData: any = {};
+      if (dto.projectId) updateData.projectId = dto.projectId;
+      if (dto.weekStart) updateData.weekStart = new Date(dto.weekStart);
+      await this.prisma.report.update({
+        where: { id },
+        data: updateData,
+      });
     }
 
     // Find the latest version
@@ -63,10 +138,10 @@ export class ReportsService {
           versionNumber: latestVersion!.versionNumber + 1,
           tasksPlannedNext: dto.tasksPlannedNext,
           optionalNotes: dto.optionalNotes,
-          tasksCompleted: { create: dto.tasksCompleted },
-          blockers: { create: dto.blockers },
-          achievements: { create: dto.achievements },
-          hoursWorked: { create: dto.hoursWorked },
+          tasksCompleted: { create: sanitizeTasks(dto.tasksCompleted) },
+          blockers: { create: sanitizeBlockers(dto.blockers) },
+          achievements: { create: sanitizeAchievements(dto.achievements) },
+          hoursWorked: { create: sanitizeHours(dto.hoursWorked) },
         },
       });
     } else {
@@ -92,10 +167,10 @@ export class ReportsService {
         data: {
           tasksPlannedNext: dto.tasksPlannedNext,
           optionalNotes: dto.optionalNotes,
-          tasksCompleted: { create: dto.tasksCompleted },
-          blockers: { create: dto.blockers },
-          achievements: { create: dto.achievements },
-          hoursWorked: { create: dto.hoursWorked },
+          tasksCompleted: { create: sanitizeTasks(dto.tasksCompleted) },
+          blockers: { create: sanitizeBlockers(dto.blockers) },
+          achievements: { create: sanitizeAchievements(dto.achievements) },
+          hoursWorked: { create: sanitizeHours(dto.hoursWorked) },
         },
       });
     }
@@ -125,6 +200,13 @@ export class ReportsService {
       include: {
         project: true,
         versions: { orderBy: { versionNumber: 'desc' }, take: 1 },
+        // The latest review comment powers the "Reviewer" column in the
+        // member's report history table.
+        comments: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          include: { manager: { select: { id: true, name: true } } },
+        },
       },
     });
   }
