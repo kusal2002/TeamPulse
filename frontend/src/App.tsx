@@ -10,6 +10,7 @@ import ManagerDashboard from "./pages/ManagerDashboard";
 import ManagerProjectsPage from "./pages/manager/ManagerProjectsPage";
 import ManagerReportsPage from "./pages/manager/ManagerReportsPage";
 import TeamMembersPage from "./pages/manager/TeamMembersPage";
+import TeamMemberProfilePage from "./pages/manager/TeamMemberProfilePage";
 import AccountPage from "./pages/AccountPage";
 import { LoginPage } from "./pages/LoginPage";
 import ReportHistoryPage from "./pages/member/ReportHistoryPage";
@@ -86,6 +87,15 @@ function AppRoutes() {
         element={
           <ProtectedRoute requiredRole="MANAGER">
             <TeamMembersPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/manager/team/:id"
+        element={
+          <ProtectedRoute requiredRole="MANAGER">
+            <TeamMemberProfilePage />
           </ProtectedRoute>
         }
       />

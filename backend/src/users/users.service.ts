@@ -1,6 +1,7 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import * as bcrypt from 'bcrypt';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -21,10 +22,151 @@ export class UsersService {
 
     return this.prisma.user.create({
       data: { email, passwordHash, name, role },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
   }
 
   async findByEmail(email: string) {
     return this.prisma.user.findUnique({ where: { email } });
+  }
+
+  async findAll() {
+    const users = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+        _count: {
+          select: { reports: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return users.map((u) => ({
+      id: u.id,
+      email: u.email,
+      name: u.name,
+      role: u.role,
+      createdAt: u.createdAt,
+      reportCount: u._count.reports,
+    }));
+  }
+
+  async getUserProfile(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+        reports: {
+          orderBy: { weekStart: 'desc' },
+          include: {
+            project: true,
+            versions: {
+              orderBy: { versionNumber: 'desc' },
+              take: 1,
+              include: {
+                tasksCompleted: true,
+                blockers: true,
+                achievements: true,
+                hoursWorked: true,
+              },
+            },
+            comments: {
+              orderBy: { createdAt: 'desc' },
+              take: 1,
+              include: { manager: { select: { name: true } } },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    // Aggregate statistics
+    const totalReports = user.reports.length;
+    const approvedReports = user.reports.filter((r) => r.status === 'APPROVED').length;
+    const needsCorrectionReports = user.reports.filter((r) => r.status === 'NEEDS_CORRECTION').length;
+    const submittedReports = user.reports.filter((r) => r.status === 'SUBMITTED').length;
+    const draftReports = user.reports.filter((r) => r.status === 'DRAFT').length;
+
+    let totalHoursLogged = 0;
+    let openBlockersCount = 0;
+
+    user.reports.forEach((r) => {
+      const latestVer = r.versions[0];
+      if (latestVer) {
+        latestVer.hoursWorked.forEach((hw) => {
+          totalHoursLogged += hw.hours || 0;
+        });
+        latestVer.blockers.forEach((b) => {
+          if (b.isKeyIssue) openBlockersCount += 1;
+        });
+      }
+    });
+
+    const complianceRate = totalReports > 0 ? Math.round((approvedReports / totalReports) * 100) : 100;
+
+    return {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+      },
+      stats: {
+        totalReports,
+        approvedReports,
+        submittedReports,
+        needsCorrectionReports,
+        draftReports,
+        totalHoursLogged,
+        openBlockersCount,
+        complianceRate,
+      },
+      reports: user.reports,
+    };
+  }
+
+  async updateRole(id: string, role: Role) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+
+    return this.prisma.user.update({
+      where: { id },
+      data: { role },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async removeUser(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+
+    return this.prisma.user.delete({
+      where: { id },
+      select: { id: true, email: true, name: true },
+    });
   }
 }
