@@ -1,6 +1,7 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
+import { AiChatWidget } from "@/components/ai-chat-widget";
 import { Outlet } from "react-router-dom";
 import * as React from "react";
 
@@ -25,6 +26,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
         <main className="flex flex-1 flex-col p-4 md:p-6 overflow-y-auto">
           {children || <Outlet />}
         </main>
+        <AiChatWidget />
       </SidebarInset>
     </SidebarProvider>
   );
