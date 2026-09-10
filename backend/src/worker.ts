@@ -11,7 +11,12 @@ let cachedExpressApp: Express | null = null;
 async function getExpressApp(): Promise<Express> {
   if (!cachedExpressApp) {
     const expressApp = express();
-    expressApp.use(express.json());
+    expressApp.use((req, res, next) => {
+      if ((req as any).body !== undefined) {
+        return next();
+      }
+      express.json({ limit: '10mb' })(req, res, next);
+    });
     expressApp.use(express.urlencoded({ extended: true }));
     const app = await NestFactory.create(
       AppModule,
@@ -75,6 +80,12 @@ export default {
                 headers.set(key, String(val));
               }
             }
+          }
+
+          const reqOrigin = request.headers.get('origin');
+          if (reqOrigin && !headers.has('access-control-allow-origin')) {
+            headers.set('access-control-allow-origin', reqOrigin);
+            headers.set('access-control-allow-credentials', 'true');
           }
 
           resolve(new Response(body, { status: res.statusCode, headers }));
