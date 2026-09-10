@@ -1,29 +1,36 @@
 # Dependencies
 node_modules/
+.pnpm-store/
 
-# Build outputs
+# Build and Output directories
 dist/
+dist-ssr/
+build/
 *.tsbuildinfo
 
 # Environment variables
 .env
 .env.*
-.dev.vars
 !.env.example
-
-# Cloudflare Wrangler
-.wrangler/
 
 # Logs
 logs/
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
 # Editor & OS files
 .vscode/
+!.vscode/extensions.json
 .idea/
 .DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Wasmer package artifacts
+# Wasmer
 .wasmer/
-wasmer.toml.backup

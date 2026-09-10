@@ -3,15 +3,19 @@ name = "teampulse-backend"
 version = "0.1.0"
 description = "TeamPulse NestJS Backend API"
 
+# Node.js on Wasmer Edge is provided by Edge.js (Node 24 compiled to WASIX).
 [dependencies]
+"wasmer/edgejs" = "*"
+
+# Prebuilt into .wasmer-build so the package carries production deps only
+# (the full dev tree is ~400 MB and fails upload with a 502).
+[fs]
+"/app" = ".wasmer-build"
 
 [[command]]
-name = "server"
-module = "server"
-runner = "https://webc.org/runner/node"
+name = "script"
+module = "wasmer/edgejs:edgejs"
+runner = "wasi"
 
 [command.annotations.wasi]
-main-args = ["dist/main.js"]
-
-[build]
-build-command = "npm run build"
+main-args = ["/app/probe.js"]
