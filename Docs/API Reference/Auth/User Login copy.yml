@@ -1,0 +1,68 @@
+info:
+  name: User Login copy
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: http://localhost:3000/auth/login
+  body:
+    type: json
+    data: |-
+      {
+        "email": "kusalsalpura@gmail.com",
+        "password": "kusal123"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNDFhNDgxOS05MGY0LTQ3NDctYmVkOS1mYjZjNzQwMjRhNjQiLCJlbWFpbCI6Imt1c2Fsc2FscHVyYUBnbWFpbC5jb20iLCJyb2xlIjoiVEVBTV9NRU1CRVIiLCJpYXQiOjE3ODg2Nzk3MDIsImV4cCI6MTc4OTI4NDUwMn0.IrqfSSTg2Gk0QH2raqMCqNQ7JFD-FmsCdRy6jcRZSYM
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: example Team Member Login
+    request:
+      url: http://localhost:3000/auth/login
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "email": "kusalsalpura@gmail.com",
+            "password": "kusal123"
+          }
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: x-powered-by
+          value: Express
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: content-length
+          value: "396"
+        - name: etag
+          value: W/"18c-4oICzsAn+Z4nFzmtAVSLVCiUUZw"
+        - name: date
+          value: Sun, 06 Sep 2026 10:21:59 GMT
+        - name: connection
+          value: keep-alive
+        - name: keep-alive
+          value: timeout=5
+      body:
+        type: json
+        data: |-
+          {
+            "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNDFhNDgxOS05MGY0LTQ3NDctYmVkOS1mYjZjNzQwMjRhNjQiLCJlbWFpbCI6Imt1c2Fsc2FscHVyYUBnbWFpbC5jb20iLCJyb2xlIjoiVEVBTV9NRU1CRVIiLCJpYXQiOjE3ODg2OTAxMTksImV4cCI6MTc4OTI5NDkxOX0.qtOEAyh-JWYMzxf1UaWXFddPMk6twTb0exlHGr-ed9k",
+            "user": {
+              "id": "e41a4819-90f4-4747-bed9-fb6c74024a64",
+              "email": "kusalsalpura@gmail.com",
+              "name": "",
+              "role": "TEAM_MEMBER"
+            }
+          }

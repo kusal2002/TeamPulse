@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express, { Express } from 'express';
 import { IncomingMessage, ServerResponse } from 'node:http';
@@ -10,6 +11,8 @@ let cachedExpressApp: Express | null = null;
 async function getExpressApp(): Promise<Express> {
   if (!cachedExpressApp) {
     const expressApp = express();
+    expressApp.use(express.json());
+    expressApp.use(express.urlencoded({ extended: true }));
     const app = await NestFactory.create(
       AppModule,
       new ExpressAdapter(expressApp),
@@ -17,6 +20,7 @@ async function getExpressApp(): Promise<Express> {
         instrument: ObserveInstrument,
       },
     );
+    app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
     app.enableCors({
       origin: true,
       credentials: true,
@@ -77,12 +81,18 @@ export default {
           return res;
         };
 
-        expressApp(req, res);
-
         if (bodyBuffer && bodyBuffer.length > 0) {
+          try {
+            const contentType = (req.headers['content-type'] || '').toString();
+            if (contentType.includes('application/json')) {
+              (req as any).body = JSON.parse(bodyBuffer.toString('utf-8'));
+            }
+          } catch (e) {}
           req.push(bodyBuffer);
         }
         req.push(null);
+
+        expressApp(req, res);
       } catch (err) {
         reject(err);
       }

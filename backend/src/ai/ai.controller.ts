@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Inject, Post } from '@nestjs/common';
 import { AiService } from './ai.service.js';
 import { IsNotEmpty, IsString } from 'class-validator';
 
@@ -10,7 +10,7 @@ class ChatPromptDto {
 
 @Controller('ai')
 export class AiController {
-  constructor(private readonly aiService: AiService) {}
+  constructor(@Inject(AiService) private readonly aiService: AiService) {}
 
   @Post('chat')
   async chat(@Body() dto: ChatPromptDto) {

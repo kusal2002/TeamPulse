@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject, Optional } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ConfigService } from '@nestjs/config';
 
@@ -9,16 +9,16 @@ export class AiService {
   private openRouterModel = 'poolside/laguna-s-2.1:free';
 
   constructor(
-    private prisma: PrismaService,
-    private configService: ConfigService,
+    @Inject(PrismaService) private prisma: PrismaService,
+    @Optional() @Inject(ConfigService) private configService?: ConfigService,
   ) {
     this.openRouterApiKey =
-      this.configService.get<string>('OPENROUTER_API_KEY') ||
+      this.configService?.get<string>('OPENROUTER_API_KEY') ||
       process.env.OPENROUTER_API_KEY ||
       null;
 
     this.openRouterModel =
-      this.configService.get<string>('OPENROUTER_MODEL') ||
+      this.configService?.get<string>('OPENROUTER_MODEL') ||
       process.env.OPENROUTER_MODEL ||
       'poolside/laguna-s-2.1:free';
 

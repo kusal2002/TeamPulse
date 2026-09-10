@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { AlertCircle } from "lucide-react";
 
 export function RegisterForm({
   className,
@@ -31,16 +33,24 @@ export function RegisterForm({
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      const msg = "Passwords do not match";
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
     setLoading(true);
     try {
       await register(email, password, name);
+      toast.success("Account created successfully!");
       navigate("/");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Registration failed");
+      const rawMsg = err.response?.data?.message;
+      const message = Array.isArray(rawMsg)
+        ? rawMsg.join(", ")
+        : rawMsg || "Registration failed";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -60,9 +70,10 @@ export function RegisterForm({
           </p>
         </div>
         {error && (
-          <p className="text-red-500 text-sm text-center font-medium">
-            {error}
-          </p>
+          <div className="flex items-center gap-2.5 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400 font-medium">
+            <AlertCircle className="size-4 shrink-0" />
+            <span>{error}</span>
+          </div>
         )}
         <Field>
           <FieldLabel htmlFor="name">Full Name</FieldLabel>
