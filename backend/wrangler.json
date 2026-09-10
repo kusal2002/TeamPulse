@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "teampulse-backend",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "alias": {
+    "@nestjs/microservices": "./src/empty-module.js",
+    "@nestjs/microservices/microservices-module.js": "./src/empty-module.js",
+    "@nestjs/websockets/socket-module.js": "./src/empty-module.js"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
