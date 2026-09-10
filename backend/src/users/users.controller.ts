@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service.js';
 import { CurrentUser } from '../common/decorators/current-user.decorator.js';
 import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
@@ -15,7 +15,7 @@ class UpdatePasswordDto {
 
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(@Inject(UsersService) private usersService: UsersService) {}
 
   @Get('me')
   getProfile(@CurrentUser() user: any) {
@@ -35,7 +35,7 @@ export class UsersController {
   @Patch('me')
   updateProfile(
     @CurrentUser() user: any,
-    @Body(ValidationPipe) dto: UpdateProfileDto,
+    @Body() dto: UpdateProfileDto,
   ) {
     return this.usersService.updateProfile(user.id, dto);
   }
@@ -43,7 +43,7 @@ export class UsersController {
   @Post('me/password')
   updatePassword(
     @CurrentUser() user: any,
-    @Body(ValidationPipe) dto: UpdatePasswordDto,
+    @Body() dto: UpdatePasswordDto,
   ) {
     return this.usersService.updatePassword(user.id, dto);
   }

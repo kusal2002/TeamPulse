@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, Put, Query } from '@nestjs/common';
 import { ReportsService } from './reports.service.js';
 import { Roles } from '../common/decorators/roles.decorator.js';
 import { CurrentUser } from '../common/decorators/current-user.decorator.js';
@@ -6,7 +6,7 @@ import { CreateReportDto, ReviewDto } from './dto/report.dto.js';
 
 @Controller('reports')
 export class ReportsController {
-  constructor(private reportsService: ReportsService) {}
+  constructor(@Inject(ReportsService) private reportsService: ReportsService) {}
 
   // --- TEAM MEMBER ENDPOINTS ---
 

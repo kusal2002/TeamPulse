@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { AlertCircle } from "lucide-react";
 
 export function LoginForm({
   className,
@@ -30,9 +32,17 @@ export function LoginForm({
     setLoading(true);
     try {
       await login(email, password);
+      toast.success("Welcome back! Logged in successfully.");
       navigate("/");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid email or password");
+      const rawMsg = err.response?.data?.message;
+      const message = Array.isArray(rawMsg)
+        ? rawMsg.join(", ")
+        : rawMsg || "Invalid email or password";
+      setError(message);
+      toast.error(message, {
+        description: "Please check your email and password and try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -52,9 +62,10 @@ export function LoginForm({
           </p>
         </div>
         {error && (
-          <p className="text-red-500 text-sm text-center font-medium">
-            {error}
-          </p>
+          <div className="flex items-center gap-2.5 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400 font-medium">
+            <AlertCircle className="size-4 shrink-0" />
+            <span>{error}</span>
+          </div>
         )}
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
