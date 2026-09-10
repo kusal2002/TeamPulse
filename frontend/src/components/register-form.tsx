@@ -11,7 +11,7 @@ import { useState, type FormEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 export function RegisterForm({
   className,
@@ -85,6 +85,7 @@ export function RegisterForm({
             className="bg-background"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            disabled={loading}
           />
         </Field>
         <Field>
@@ -98,6 +99,7 @@ export function RegisterForm({
             className="bg-background"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
           />
           <FieldDescription>
             We&apos;ll use this to contact you. We will not share your email with anyone else.
@@ -114,6 +116,7 @@ export function RegisterForm({
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             minLength={6}
+            disabled={loading}
           />
           <FieldDescription>Must be at least 6 characters long.</FieldDescription>
         </Field>
@@ -128,12 +131,20 @@ export function RegisterForm({
             minLength={6}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            disabled={loading}
           />
           <FieldDescription>Please confirm your password.</FieldDescription>
         </Field>
         <Field>
-          <Button type="submit" disabled={loading}>
-            {loading ? "Creating Account..." : "Create Account"}
+          <Button type="submit" disabled={loading} className="w-full relative overflow-hidden transition-all">
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="size-4 animate-spin" />
+                Creating Account...
+              </span>
+            ) : (
+              "Create Account"
+            )}
           </Button>
         </Field>
         <Field>

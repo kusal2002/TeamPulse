@@ -6,7 +6,7 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
-import { Progress } from "@/components/ui/progress";
+import { LoadingScreen } from "@/components/loading-screen";
 
 interface User {
   id: string;
@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState("Verifying session...");
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -43,6 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
+    setLoadingMessage("Signing into your account...");
     setIsLoading(true);
     try {
       const res = await api.post("/auth/login", { email, password });
@@ -59,6 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const register = async (email: string, password: string, name: string) => {
+    setLoadingMessage("Creating your TeamPulse account...");
     setIsLoading(true);
     try {
       const response = await api.post("/auth/register", {
@@ -94,18 +97,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const [progress, setProgress] = React.useState(13);
-  React.useEffect(() => {
-    const timer = setTimeout(() => setProgress(66), 500);
-    return () => clearTimeout(timer);
-  }, []);
-
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Progress value={progress} className="w-[60%]" />
-      </div>
-    );
+    return <LoadingScreen message={loadingMessage} />;
   }
 
   return (
