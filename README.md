@@ -4,6 +4,15 @@ TeamPulse is a full-stack web application designed for software engineering team
 
 ---
 
+## 🌐 Live Deployment
+
+| Service  | URL                                                | Platform           |
+| :------- | :------------------------------------------------- | :----------------- |
+| Frontend | https://teampulsefe.netlify.app                     | Netlify            |
+| Backend  | https://teampulse-backend.kusalsalpura.workers.dev  | Cloudflare Workers |
+
+---
+
 ## ✨ Key Features
 
 ### 1. User Authentication & Role-Based Access Control (RBAC)

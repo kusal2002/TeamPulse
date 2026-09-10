@@ -11,7 +11,7 @@ import { useState, type FormEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 export function LoginForm({
   className,
@@ -75,6 +75,7 @@ export function LoginForm({
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
             required
           />
         </Field>
@@ -94,12 +95,20 @@ export function LoginForm({
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
             required
           />
         </Field>
         <Field>
-          <Button type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+          <Button type="submit" disabled={loading} className="w-full relative overflow-hidden transition-all">
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="size-4 animate-spin" />
+                Logging in...
+              </span>
+            ) : (
+              "Login"
+            )}
           </Button>
         </Field>
         <Field>
