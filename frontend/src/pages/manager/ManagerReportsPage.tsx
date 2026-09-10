@@ -203,13 +203,13 @@ export default function ManagerReportsPage() {
                       <SelectValue placeholder="All Statuses" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ALL">All Statuses</SelectItem>
-                      <SelectItem value="DRAFT">Draft</SelectItem>
-                      <SelectItem value="SUBMITTED">Submitted</SelectItem>
-                      <SelectItem value="NEEDS_CORRECTION">
+                      <SelectItem value="ALL" label="All Statuses">All Statuses</SelectItem>
+                      <SelectItem value="DRAFT" label="Draft">Draft</SelectItem>
+                      <SelectItem value="SUBMITTED" label="Submitted">Submitted</SelectItem>
+                      <SelectItem value="NEEDS_CORRECTION" label="Needs Correction">
                         Needs Correction
                       </SelectItem>
-                      <SelectItem value="APPROVED">Approved</SelectItem>
+                      <SelectItem value="APPROVED" label="Approved">Approved</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -226,9 +226,9 @@ export default function ManagerReportsPage() {
                       <SelectValue placeholder="All Projects" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ALL">All Projects</SelectItem>
+                      <SelectItem value="ALL" label="All Projects">All Projects</SelectItem>
                       {projects?.map((p: any) => (
-                        <SelectItem key={p.id} value={p.id}>
+                        <SelectItem key={p.id} value={p.id} label={p.name}>
                           {p.name}
                         </SelectItem>
                       ))}
