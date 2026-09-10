@@ -1,14 +1,18 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import pg from 'pg';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import { neonConfig } from '@neondatabase/serverless';
+
+// Cloudflare Workers have no raw TCP `net` sockets, so the `pg` driver cannot
+// reach Postgres. Neon's serverless driver talks over fetch/WebSocket instead.
+neonConfig.webSocketConstructor = WebSocket;
+neonConfig.poolQueryViaFetch = true;
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor() {
     const connectionString = process.env.DATABASE_URL || '';
-    const pool = new pg.Pool({ connectionString });
-    const adapter = new PrismaPg(pool);
+    const adapter = new PrismaNeon({ connectionString });
     super({ adapter });
   }
 
@@ -16,5 +20,3 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.$connect();
   }
 }
-
-
