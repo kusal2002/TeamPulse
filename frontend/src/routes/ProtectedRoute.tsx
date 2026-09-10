@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { LoadingScreen } from "../components/loading-screen";
 
 interface Props {
   children: React.ReactNode;
@@ -9,7 +10,7 @@ interface Props {
 export default function ProtectedRoute({ children, requiredRole }: Props) {
   const { user, isLoading } = useAuth();
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingScreen />;
 
   // If not logged in, redirect to login
   if (!user) {
