@@ -50,7 +50,10 @@ const INITIAL_MESSAGES: ChatMessage[] = [
     id: "welcome",
     sender: "assistant",
     text: "Hello! I am your **TeamPulse AI Assistant**, powered by **Laguna-S 2.1** (OpenRouter). How can I help you analyze weekly team reports, open blockers, or project progress today?",
-    timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    timestamp: new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
   },
 ];
 
@@ -81,7 +84,10 @@ export function AiChatWidget() {
       id: Date.now().toString(),
       sender: "user",
       text,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -90,13 +96,18 @@ export function AiChatWidget() {
 
     try {
       const res = await api.post("/ai/chat", { prompt: text });
-      const aiReply = res.data?.response || "I couldn't generate a response. Please try again.";
+      const aiReply =
+        res.data?.response ||
+        "I couldn't generate a response. Please try again.";
 
       const aiMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         sender: "assistant",
         text: aiReply,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       };
 
       setMessages((prev) => [...prev, aiMsg]);
@@ -108,7 +119,10 @@ export function AiChatWidget() {
           id: (Date.now() + 1).toString(),
           sender: "assistant",
           text: "⚠️ Sorry, I encountered an error connecting to the AI service. Please verify your connection or try again shortly.",
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
         },
       ]);
     } finally {
@@ -159,9 +173,6 @@ export function AiChatWidget() {
               <div>
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
                   TeamPulse AI Assistant
-                  <Badge variant="secondary" className="text-[10px] font-mono px-1.5 py-0">
-                    Laguna-S 2.1
-                  </Badge>
                 </CardTitle>
                 <CardDescription className="text-xs">
                   Executive Q&A & team report analysis
@@ -188,7 +199,11 @@ export function AiChatWidget() {
                 onClick={() => setIsExpanded(!isExpanded)}
                 title={isExpanded ? "Collapse" : "Expand"}
               >
-                {isExpanded ? <Minimize2Icon className="size-4" /> : <Maximize2Icon className="size-4" />}
+                {isExpanded ? (
+                  <Minimize2Icon className="size-4" />
+                ) : (
+                  <Maximize2Icon className="size-4" />
+                )}
               </Button>
               <Button
                 variant="ghost"
@@ -240,21 +255,53 @@ export function AiChatWidget() {
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
-                        h1: ({ children }) => <h1 className="text-sm font-bold mt-2 mb-1 border-b pb-1">{children}</h1>,
-                        h2: ({ children }) => <h2 className="text-xs font-bold mt-2 mb-1">{children}</h2>,
-                        h3: ({ children }) => <h3 className="text-xs font-bold mt-2 mb-1 text-primary">{children}</h3>,
-                        p: ({ children }) => <p className="mb-1.5 last:mb-0 leading-relaxed">{children}</p>,
+                        h1: ({ children }) => (
+                          <h1 className="text-sm font-bold mt-2 mb-1 border-b pb-1">
+                            {children}
+                          </h1>
+                        ),
+                        h2: ({ children }) => (
+                          <h2 className="text-xs font-bold mt-2 mb-1">
+                            {children}
+                          </h2>
+                        ),
+                        h3: ({ children }) => (
+                          <h3 className="text-xs font-bold mt-2 mb-1 text-primary">
+                            {children}
+                          </h3>
+                        ),
+                        p: ({ children }) => (
+                          <p className="mb-1.5 last:mb-0 leading-relaxed">
+                            {children}
+                          </p>
+                        ),
                         strong: ({ children }) => (
-                          <strong className={`font-bold ${msg.sender === "user" ? "text-primary-foreground font-semibold" : "text-foreground font-bold"}`}>
+                          <strong
+                            className={`font-bold ${msg.sender === "user" ? "text-primary-foreground font-semibold" : "text-foreground font-bold"}`}
+                          >
                             {children}
                           </strong>
                         ),
-                        em: ({ children }) => <em className="italic">{children}</em>,
-                        ul: ({ children }) => <ul className="list-disc pl-4 my-1 space-y-0.5">{children}</ul>,
-                        ol: ({ children }) => <ol className="list-decimal pl-4 my-1 space-y-0.5">{children}</ol>,
-                        li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                        em: ({ children }) => (
+                          <em className="italic">{children}</em>
+                        ),
+                        ul: ({ children }) => (
+                          <ul className="list-disc pl-4 my-1 space-y-0.5">
+                            {children}
+                          </ul>
+                        ),
+                        ol: ({ children }) => (
+                          <ol className="list-decimal pl-4 my-1 space-y-0.5">
+                            {children}
+                          </ol>
+                        ),
+                        li: ({ children }) => (
+                          <li className="leading-relaxed">{children}</li>
+                        ),
                         code: ({ children }) => (
-                          <code className={`px-1 py-0.5 rounded font-mono text-[11px] ${msg.sender === "user" ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-foreground font-semibold"}`}>
+                          <code
+                            className={`px-1 py-0.5 rounded font-mono text-[11px] ${msg.sender === "user" ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-foreground font-semibold"}`}
+                          >
                             {children}
                           </code>
                         ),
@@ -265,11 +312,15 @@ export function AiChatWidget() {
                         ),
                         table: ({ children }) => (
                           <div className="overflow-x-auto my-2">
-                            <table className="w-full text-left border-collapse text-[11px]">{children}</table>
+                            <table className="w-full text-left border-collapse text-[11px]">
+                              {children}
+                            </table>
                           </div>
                         ),
                         th: ({ children }) => (
-                          <th className="border-b bg-muted/50 px-2 py-1 font-bold">{children}</th>
+                          <th className="border-b bg-muted/50 px-2 py-1 font-bold">
+                            {children}
+                          </th>
                         ),
                         td: ({ children }) => (
                           <td className="border-b px-2 py-1">{children}</td>
@@ -326,26 +377,38 @@ export function AiChatWidget() {
                 />
                 <DropdownMenuContent align="start" side="top" className="w-56">
                   <DropdownMenuItem
-                    onClick={() => handleSendPrompt("Summarize team activity for this week")}
+                    onClick={() =>
+                      handleSendPrompt("Summarize team activity for this week")
+                    }
                   >
                     <FileTextIcon className="size-4 mr-2 text-blue-500" />
                     Summarize Weekly Activity
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => handleSendPrompt("What are the major open blockers across the team?")}
+                    onClick={() =>
+                      handleSendPrompt(
+                        "What are the major open blockers across the team?",
+                      )
+                    }
                   >
                     <AlertTriangleIcon className="size-4 mr-2 text-destructive" />
                     Check Open Blockers
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={() => handleSendPrompt("Which projects have pending reviews?")}
+                    onClick={() =>
+                      handleSendPrompt("Which projects have pending reviews?")
+                    }
                   >
                     <FolderIcon className="size-4 mr-2 text-amber-500" />
                     Pending Project Reviews
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => handleSendPrompt("Generate a highlights report for key achievements")}
+                    onClick={() =>
+                      handleSendPrompt(
+                        "Generate a highlights report for key achievements",
+                      )
+                    }
                   >
                     <SparkleIcon className="size-4 mr-2 text-emerald-500" />
                     Key Achievements Report
